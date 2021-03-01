@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.12)
 project(SECYAN LANGUAGES CXX)
 cmake_policy(SET CMP0077 NEW)
 
+set(CMAKE_THREAD_LIBS_INIT "-lpthread")
+
 option(SECYAN_TEST "Build tests" OFF)
 set(SECYAN_SOURCE_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 set(SECYAN_BINARY_ROOT "${CMAKE_CURRENT_BINARY_DIR}")
