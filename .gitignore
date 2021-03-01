@@ -3,3 +3,5 @@ Release
 *.csv
 cmake-build-debug
 cmake-build-release
+cmake-build-debug-docker
+cmake-build-release-docker
