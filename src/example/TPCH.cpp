@@ -64,6 +64,13 @@ inline std::string GetFilePath(RelationName rn, DataSize ds)
 	return datapath[ds] + filename[rn];
 }
 
+
+
+
+//select l_orderkey, sum(l_extendedprice * (1 - l_discount)) as revenue,
+//        o_orderdate, o_shippriority from CUSTOMER, ORDERS, LINEITEM where c_mktsegment = 'AUTOMOBILE'
+//and c_custkey = o_custkey and l_orderkey = o_orderkey and o_orderdate < date '1995-03-13'
+//and l_shipdate > date '1995-03-13' group by l_orderkey, o_orderdate, o_shippriority order by revenue desc, o_orderdate limit 10;
 void run_Q3(DataSize ds, bool printResult)
 {
 	vector<string> o_groupBy = {"o_orderkey", "o_orderdate", "o_shippriority"};
@@ -101,6 +108,7 @@ void run_Q3(DataSize ds, bool printResult)
 
 	orders.Aggregate(o_groupBy);
 	orders.RevealAnnotToOwner();
+
 	if (printResult)
 		orders.Print();
 }
@@ -133,6 +141,7 @@ void run_Q10(DataSize ds, bool printResult)
 	if (printResult)
 		customer.Print();
 }
+
 
 void run_Q18(DataSize ds, bool printResult)
 {
@@ -347,4 +356,65 @@ void run_Q9(DataSize ds, bool printResult)
 	out.RevealAnnotToOwner();
 	if (printResult)
 		out.Print();
+}
+
+void run_Q5(DataSize ds, bool printResult){
+    auto cust_ri = GetRI(CUSTOMER, Q5, ds, SERVER);
+    Relation::AnnotInfo cust_ai = {true, true};
+    Relation customer(cust_ri, cust_ai);
+    auto filePath = GetFilePath(CUSTOMER, ds);
+    customer.LoadData(filePath.c_str(), "q5_annot");
+
+    auto orders_ri = GetRI(ORDERS, Q5, ds, CLIENT);
+    Relation::AnnotInfo orders_ai = {true, true};
+    Relation orders(orders_ri, orders_ai);
+    filePath = GetFilePath(ORDERS, ds);
+    orders.LoadData(filePath.c_str(), "q5_annot");
+
+    auto lineitem_ri = GetRI(LINEITEM, Q5, ds, SERVER);
+    Relation::AnnotInfo lineitem_ai = {false, true};
+    Relation lineitem(lineitem_ri, lineitem_ai);
+    filePath = GetFilePath(LINEITEM, ds);
+    lineitem.LoadData(filePath.c_str(), "q5_annot");
+    lineitem.Aggregate();
+
+    auto supplier_ri = GetRI(SUPPLIER, Q5, ds, SERVER);
+    Relation::AnnotInfo supplier_ai = {false, true};
+    Relation supplier(lineitem_ri, lineitem_ai);
+    filePath = GetFilePath(SUPPLIER, ds);
+    supplier.LoadData(filePath.c_str(), "q5_annot");
+    supplier.Aggregate();
+
+    orders.SemiJoin(lineitem, "o_orderkey", "l_orderkey");
+    orders.Aggregate("o_custkey");
+    customer.SemiJoin(orders, "c_custkey", "o_custkey");
+    supplier.SemiJoin(lineitem, "l_suppkey", "s_suppkey");
+    customer.SemiJoin(supplier, "c_nationkey", "s_nationkey");
+    customer.RevealAnnotToOwner();
+    if (printResult)
+        customer.Print();
+}
+
+
+void run_Q11(DataSize ds, bool printResult){
+
+
+    auto orders_ri = GetRI(ORDERS, Q11, ds, CLIENT);
+    Relation::AnnotInfo orders_ai = {true, true};
+    Relation orders(orders_ri, orders_ai);
+    auto filePath = GetFilePath(ORDERS, ds);
+    orders.LoadData(filePath.c_str(), "q11_annot");
+
+    auto lineitem_ri = GetRI(LINEITEM, Q11, ds, SERVER);
+    Relation::AnnotInfo lineitem_ai = {false, true};
+    Relation lineitem(lineitem_ri, lineitem_ai);
+    filePath = GetFilePath(LINEITEM, ds);
+    lineitem.LoadData(filePath.c_str(), "q11_annot");
+    lineitem.Aggregate();
+
+    orders.SemiJoin(lineitem, "o_orderkey", "l_orderkey");
+    orders.RevealAnnotToOwner();
+
+    if (printResult)
+        lineitem.Print();
 }

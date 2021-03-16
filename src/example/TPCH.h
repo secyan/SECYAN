@@ -18,14 +18,16 @@ enum RelationName
     RTOTAL
 };
 
-enum QueryName
-{
+enum QueryName{
+
     Q3,
     Q10,
     Q18,
     Q8,
     Q9,
-    QTOTAL
+    QTOTAL,
+    Q5,
+    Q11,
 };
 
 enum DataSize

@@ -1,15 +1,17 @@
 version: '3'
 services:
-#  mysql:
-#    container_name: flask_mysql
-#    restart: always
-#    image: mysql:latest
-#    environment:
-#      MYSQL_ROOT_PASSWORD: 'pass'
-#      MYSQL_USER: 'test'
-#      MYSQL_PASS: 'pass'
-#    volumes:
-#      - my-datavolume:/var/lib/mysql
+  mysql:
+    container_name: secyan_sql
+    restart: always
+    image: mysql:latest
+    ports:
+     - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: 'pass'
+      MYSQL_USER: 'test'
+      MYSQL_PASS: 'pass'
+    volumes:
+      - ./database:/var/lib/mysql
   dev:
     container_name: secyan_dev
     command: "/usr/sbin/sshd -D -e -f /etc/ssh/sshd_config_test_clion"
@@ -22,7 +24,7 @@ services:
       - ./:/usr/local/project
   demo:
     container_name: secyan_demo
-    command: "gcc -v"
+    command: "g++ -v"
     build:
       dockerfile: docker/demo.dockerfile
       context: ./

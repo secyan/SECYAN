@@ -9,8 +9,8 @@ function<run_query> query_funcs[QTOTAL] = {run_Q3, run_Q10, run_Q18, run_Q8, run
 int main(int argc, char **)
 {
     int irole, iqn, ids;
-    string address = "127.0.0.1";
-    uint16_t port = 7766;
+    string address = "mysql";
+    uint16_t port = 3306;
     e_role role = SERVER;
 
     cout << "Who are you? [0. Server, 1. Client]: ";
