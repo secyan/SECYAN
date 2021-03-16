@@ -10,6 +10,13 @@
  - libgmp-dev
  - libboost-all-dev (Boost >= 1.66)
 
+## For macOS
+
+- brew install cmake
+- brew install openssl
+- brew install gmp
+- brew install boost
+
 # Configure and Compile
 ``` bash
 git clone --recurse-submodules https://github.com/Aqua-Dream/SECYAN
