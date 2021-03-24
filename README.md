@@ -12,10 +12,23 @@
 
 ## For macOS
 
-- brew install cmake
-- brew install openssl
-- brew install gmp
-- brew install boost
+There exists some issues with macOS. Please use docker to run the application on macOS
+
+# Run the example in Docker
+
+First install docker on your local machine, and then in the main folder, run
+```bash
+docker-compose build dev
+```
+```bash
+dokcer-compose up dev
+```
+
+And now you can ssh into the container like
+```
+ssh user@localhost -p 2222
+```
+
 
 # Configure and Compile
 ``` bash
@@ -72,8 +85,8 @@ Usage: ./benchmark
  -q [Query ID (3,10,18,8,9,0), default: 0, i.e. test all queries. , optional]
 
 Program exiting
-> ./benchmark -r 0 > result_server.txt &
-> ./benchmark -r 1 > result_client.txt &
+> ./benchmark -r 0 -p 7706 > result_server.txt &
+> ./benchmark -r 1 -p 7706 -q 3> result_client.txt &
 ```
 
 # Remark

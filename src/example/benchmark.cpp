@@ -6,8 +6,8 @@
 #include "TPCH.h"
 
 using namespace std;
-function<run_query> query_funcs[QTOTAL] = {run_Q3, run_Q10, run_Q18, run_Q8, run_Q9};
-uint32_t QueryID[DTOTAL] = {3, 10, 18, 8, 9};
+function<run_query> query_funcs[QTOTAL] = {run_Q3, run_Q10, run_Q18, run_Q8, run_Q9, run_Q5, run_Q11};
+uint32_t QueryID[QTOTAL] = {3, 10, 18, 8, 9, 5, 11};
 
 struct Stat
 {
@@ -37,7 +37,7 @@ void read_options(int32_t *argcp, char ***argvp, e_role *role, string *address, 
         {(void *)address, T_STR, "a", "IP-address, default: 127.0.0.1", false, false},
         {(void *)&int_port, T_NUM, "p", "Port (will use port & port+1), default: 7766", false, false},
         {(void *)num_reps, T_NUM, "n", "Number of test runs, default: 3", false, false},
-        {(void *)qid, T_NUM, "q", "Query ID (3,10,18,8,9,0), default: 0, i.e. test all queries. ", false, false}};
+        {(void *)qid, T_NUM, "q", "Query ID (3,10,18,8,9,5,11,0), default: 0, i.e. test all queries. ", false, false}};
 
     if (!parse_options(argcp, argvp, options, sizeof(options) / sizeof(parsing_ctx)))
     {
@@ -53,7 +53,7 @@ void read_options(int32_t *argcp, char ***argvp, e_role *role, string *address, 
     }
     *role = (e_role)int_role;
 
-    if (*qid != 3 && *qid != 10 && *qid != 18 && *qid != 8 && *qid != 9 && *qid != 0)
+    if (*qid != 3 && *qid != 10 && *qid != 18 && *qid != 8 && *qid != 9 && *qid != 0 && *qid != 5 && *qid != 11)
     {
         cerr << "Query id error!" << endl;
         print_usage(*argvp[0], options, sizeof(options) / sizeof(parsing_ctx));

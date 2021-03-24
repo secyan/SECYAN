@@ -6,3 +6,5 @@ cmake-build-release
 cmake-build-debug-docker
 cmake-build-release-docker
 database
+cmake-build-release-remote-host
+cmake-build-release-remote-host/
