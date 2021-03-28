@@ -372,6 +372,7 @@ void run_Q9(DataSize ds, bool printResult) {
 
 // New added
 void run_Q5(DataSize ds, bool printResult) {
+    //TODO: Fix this or remove
     Relation::RelationInfo customer_ri = {
             CLIENT,
             false,
