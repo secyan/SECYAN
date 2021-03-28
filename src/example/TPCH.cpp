@@ -370,6 +370,7 @@ void run_Q9(DataSize ds, bool printResult) {
         out.Print();
 }
 
+// New added
 void run_Q5(DataSize ds, bool printResult) {
     Relation::RelationInfo customer_ri = {
             CLIENT,
@@ -459,7 +460,7 @@ void run_Q5(DataSize ds, bool printResult) {
 }
 
 
-void runQ12(DataSize ds, bool printResult) {
+void run_Q12(DataSize ds, bool printResult) {
     Relation::RelationInfo orders_ri = {
             CLIENT,
             false,
@@ -502,4 +503,145 @@ void runQ12(DataSize ds, bool printResult) {
     lineitem.RevealAnnotToOwner();
     if (printResult)
         lineitem.Print();
+}
+
+void run_Q6(DataSize ds, bool printResult) {
+    Relation::RelationInfo lineitem_ri = {
+            CLIENT,
+            false,
+            {"l_orderkey", "l_partkey", "l_suppkey", "l_linenumber", "l_quantity", "l_extendedprice", "l_discount",
+             "l_tax", "l_returnflag", "l_linestatus", "l_shipdate", "l_commitdate", "l_receiptdate", "l_shippinstruct",
+             "l_shipmode", "l_comment"},
+            {Relation::INT, Relation::INT, Relation::INT, Relation::INT, Relation::DECIMAL, Relation::DECIMAL,
+             Relation::DECIMAL, Relation::DECIMAL, Relation::STRING, Relation::STRING, Relation::DATE, Relation::DATE,
+             Relation::DATE, Relation::STRING, Relation::STRING, Relation::STRING},
+            NumRows[LINEITEM][ds],
+            false
+    };
+    Relation::AnnotInfo lineitem_ai = {false, true};
+    Relation lineitem(lineitem_ri, lineitem_ai);
+    auto filePath = GetFilePath(LINEITEM, ds);
+    lineitem.LoadData(filePath.c_str(), "demo");
+
+
+    lineitem.RevealAnnotToOwner();
+    if (printResult)
+        lineitem.Print();
+}
+
+
+void run_Q14(DataSize ds, bool printResult) {
+
+    Relation::RelationInfo lineitem_ri = {
+            CLIENT,
+            false,
+            {"l_orderkey", "l_partkey", "l_suppkey", "l_linenumber", "l_quantity", "l_extendedprice", "l_discount",
+             "l_tax", "l_returnflag", "l_linestatus", "l_shipdate", "l_commitdate", "l_receiptdate", "l_shippinstruct",
+             "l_shipmode", "l_comment"},
+            {Relation::INT, Relation::INT, Relation::INT, Relation::INT, Relation::DECIMAL, Relation::DECIMAL,
+             Relation::DECIMAL, Relation::DECIMAL, Relation::STRING, Relation::STRING, Relation::DATE, Relation::DATE,
+             Relation::DATE, Relation::STRING, Relation::STRING, Relation::STRING},
+            NumRows[LINEITEM][ds],
+            false
+    };
+    Relation::AnnotInfo lineitem_ai = {true, true};
+    Relation lineitem(lineitem_ri, lineitem_ai);
+    auto filePath = GetFilePath(LINEITEM, ds);
+    lineitem.LoadData(filePath.c_str(), "demo");
+
+
+    Relation::RelationInfo part_ri = {
+            SERVER,
+            false,
+            {"p_partkey", "p_name", "p_mfgr", "p_brand", "p_type", "p_size", "p_container", "p_retailprice",
+             "p_comment", "l_orderkey", "l_suppkey", "l_linenumber", "l_quantity", "l_extendedprice", "l_discount",
+             "l_tax", "l_returnflag", "l_linestatus", "l_shipdate", "l_commitdate", "l_receiptdate", "l_shippinstruct",
+             "l_shipmode", "l_comment"},
+            {Relation::INT, Relation::STRING, Relation::STRING, Relation::STRING, Relation::STRING, Relation::INT,
+             Relation::STRING, Relation::DECIMAL, Relation::STRING, Relation::INT, Relation::INT, Relation::INT,
+             Relation::DECIMAL, Relation::DECIMAL, Relation::DECIMAL, Relation::DECIMAL, Relation::STRING,
+             Relation::STRING, Relation::DATE, Relation::DATE, Relation::DATE, Relation::STRING, Relation::STRING,
+             Relation::STRING},
+            NumRows[PART][ds],
+            false
+    };
+    Relation::AnnotInfo part_ai = {true, true};
+    Relation part(part_ri, part_ai);
+    filePath = GetFilePath(PART, ds);
+    part.LoadData(filePath.c_str(), "demo");
+
+    lineitem.Aggregate({"l_partkey"});
+    part.SemiJoin(lineitem, "p_partkey", "l_partkey");
+
+    part.RevealAnnotToOwner();
+    if (printResult)
+        part.Print();
+
+}
+
+
+void run_Q1(DataSize ds, bool printResult) {
+
+    Relation::RelationInfo lineitem_ri = {
+            CLIENT,
+            false,
+            {"l_orderkey", "l_partkey", "l_suppkey", "l_linenumber", "l_quantity", "l_extendedprice", "l_discount",
+             "l_tax", "l_returnflag", "l_linestatus", "l_shipdate", "l_commitdate", "l_receiptdate", "l_shippinstruct",
+             "l_shipmode", "l_comment"},
+            {Relation::INT, Relation::INT, Relation::INT, Relation::INT, Relation::DECIMAL, Relation::DECIMAL,
+             Relation::DECIMAL, Relation::DECIMAL, Relation::STRING, Relation::STRING, Relation::DATE, Relation::DATE,
+             Relation::DATE, Relation::STRING, Relation::STRING, Relation::STRING},
+            NumRows[LINEITEM][ds],
+            false
+    };
+    Relation::AnnotInfo lineitem_ai = {false, true};
+    Relation lineitem(lineitem_ri, lineitem_ai);
+    auto filePath = GetFilePath(LINEITEM, ds);
+    lineitem.LoadData(filePath.c_str(), "demo");
+
+    vector<string> o_groupBy = {"l_returnflag", "l_linestatus"};
+    lineitem.Aggregate(o_groupBy);
+    lineitem.RevealAnnotToOwner();
+    if (printResult)
+        lineitem.Print();
+
+}
+
+
+void run_Q4(DataSize ds, bool printResult){
+
+    Relation::RelationInfo orders_ri = {
+            SERVER,
+            false,
+            { "o_orderkey","o_custkey","o_orderstatus","o_totalprice","o_orderdate","o_orderpriority","o_clerk","o_shippriority","o_comment","l_partkey","l_suppkey","l_linenumber","l_quantity","l_extendedprice","l_discount","l_tax","l_returnflag","l_linestatus","l_shipdate","l_commitdate","l_receiptdate","l_shippinstruct","l_shipmode","l_comment" },
+            { Relation::INT,Relation::INT,Relation::STRING,Relation::STRING,Relation::DATE,Relation::STRING,Relation::STRING,Relation::INT,Relation::STRING,Relation::INT,Relation::INT,Relation::INT,Relation::DECIMAL,Relation::DECIMAL,Relation::DECIMAL,Relation::DECIMAL,Relation::STRING,Relation::STRING,Relation::DATE,Relation::DATE,Relation::DATE,Relation::STRING,Relation::STRING,Relation::STRING },
+            NumRows[ORDERS][ds],
+            false
+    };
+    Relation::AnnotInfo orders_ai = { true , true};
+    Relation orders(orders_ri, orders_ai);
+    auto filePath = GetFilePath(ORDERS, ds);
+    orders.LoadData(filePath.c_str(), "demo");
+
+
+    Relation::RelationInfo lineitem_ri = {
+            CLIENT,
+            false,
+            { "l_orderkey","l_partkey","l_suppkey","l_linenumber","l_quantity","l_extendedprice","l_discount","l_tax","l_returnflag","l_linestatus","l_shipdate","l_commitdate","l_receiptdate","l_shippinstruct","l_shipmode","l_comment" },
+            { Relation::INT,Relation::INT,Relation::INT,Relation::INT,Relation::DECIMAL,Relation::DECIMAL,Relation::DECIMAL,Relation::DECIMAL,Relation::STRING,Relation::STRING,Relation::DATE,Relation::DATE,Relation::DATE,Relation::STRING,Relation::STRING,Relation::STRING },
+            NumRows[LINEITEM][ds],
+            false
+    };
+    Relation::AnnotInfo lineitem_ai = { true , true};
+    Relation lineitem(lineitem_ri, lineitem_ai);
+    filePath = GetFilePath(LINEITEM, ds);
+    lineitem.LoadData(filePath.c_str(), "demo");
+
+    lineitem.Aggregate({ "l_orderkey" });orders.SemiJoin(lineitem,"o_orderkey" , "l_orderkey");
+    vector<string> o_groupBy = { "o_orderpriority" };
+    orders.Aggregate(o_groupBy);
+    orders.RevealAnnotToOwner();
+    if (printResult)
+        orders.Print();
+
 }

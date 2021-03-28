@@ -6,18 +6,17 @@
 #include "TPCH.h"
 
 using namespace std;
-function<run_query> query_funcs[QTOTAL] = {run_Q3, run_Q10, run_Q18, run_Q8, run_Q9, run_Q5, run_Q12};
-uint32_t QueryID[QTOTAL] = {3, 10, 18, 8, 9, 5, 11};
+function<run_query> query_funcs[QTOTAL] = {run_Q3, run_Q10, run_Q18, run_Q8, run_Q9, run_Q5, run_Q12, run_Q6, run_Q14,
+                                           run_Q1, run_Q4};
+uint32_t QueryID[QTOTAL] = {3, 10, 18, 8, 9, 5, 12, 6, 14, 1, 4};
 
-struct Stat
-{
+struct Stat {
     uint64_t time;
     uint64_t cost;
 };
 
 // Get the average running time and cost of a single query
-Stat SingleQuery(QueryName qn, DataSize ds, uint32_t numRepeat)
-{
+Stat SingleQuery(QueryName qn, DataSize ds, uint32_t numRepeat) {
     Stat st;
     gParty.Tick("SingleQuery");
     for (uint32_t i = 0; i < numRepeat; i++)
@@ -27,59 +26,54 @@ Stat SingleQuery(QueryName qn, DataSize ds, uint32_t numRepeat)
     return st;
 }
 
-void read_options(int32_t *argcp, char ***argvp, e_role *role, string *address, uint16_t *port, uint32_t *num_reps, uint32_t *qid)
-{
+void read_options(int32_t *argcp, char ***argvp, e_role *role, string *address, uint16_t *port, uint32_t *num_reps,
+                  uint32_t *qid) {
 
     uint32_t int_role = 0, int_port = 0;
 
     parsing_ctx options[] = {
-        {(void *)&int_role, T_NUM, "r", "Role: 0/1, default: 0 (SERVER)", true, false},
-        {(void *)address, T_STR, "a", "IP-address, default: 127.0.0.1", false, false},
-        {(void *)&int_port, T_NUM, "p", "Port (will use port & port+1), default: 7766", false, false},
-        {(void *)num_reps, T_NUM, "n", "Number of test runs, default: 3", false, false},
-        {(void *)qid, T_NUM, "q", "Query ID (3,10,18,8,9,5,11,0), default: 0, i.e. test all queries. ", false, false}};
+            {(void *) &int_role, T_NUM, "r", "Role: 0/1, default: 0 (SERVER)",                                             true,  false},
+            {(void *) address,   T_STR, "a", "IP-address, default: 127.0.0.1",                                             false, false},
+            {(void *) &int_port, T_NUM, "p", "Port (will use port & port+1), default: 7766",                               false, false},
+            {(void *) num_reps,  T_NUM, "n", "Number of test runs, default: 3",                                            false, false},
+            {(void *) qid,       T_NUM, "q", "Query ID (3,10,18,8,9,5,12,6,14,17,0), default: 0, i.e. test all queries. ", false, false}};
 
-    if (!parse_options(argcp, argvp, options, sizeof(options) / sizeof(parsing_ctx)))
-    {
+    if (!parse_options(argcp, argvp, options, sizeof(options) / sizeof(parsing_ctx))) {
         print_usage(*argvp[0], options, sizeof(options) / sizeof(parsing_ctx));
         exit(EXIT_SUCCESS);
     }
 
-    if (int_role != 0 && int_role != 1)
-    {
+    if (int_role != 0 && int_role != 1) {
         cerr << "Role error!" << endl;
         print_usage(*argvp[0], options, sizeof(options) / sizeof(parsing_ctx));
         exit(EXIT_SUCCESS);
     }
-    *role = (e_role)int_role;
+    *role = (e_role) int_role;
 
-    if (*qid != 3 && *qid != 10 && *qid != 18 && *qid != 8 && *qid != 9 && *qid != 0 && *qid != 5 && *qid != 11)
-    {
+    if (*qid != 3 && *qid != 10 && *qid != 18 && *qid != 8 && *qid != 9 && *qid != 0 && *qid != 5 && *qid != 12 &&
+        *qid != 6 && *qid != 14 && *qid != 1 && *qid != 4) {
         cerr << "Query id error!" << endl;
         print_usage(*argvp[0], options, sizeof(options) / sizeof(parsing_ctx));
         exit(EXIT_SUCCESS);
     }
 
-    if (int_port == 0 || int_port > INT16_MAX)
-    {
+    if (int_port == 0 || int_port > INT16_MAX) {
         cerr << "Port error!" << endl;
         print_usage(*argvp[0], options, sizeof(options) / sizeof(parsing_ctx));
         exit(EXIT_SUCCESS);
     }
-    *port = (uint16_t)int_port;
+    *port = (uint16_t) int_port;
 }
 
-template <typename T>
-void print_array(T *arr, uint32_t size)
-{
+template<typename T>
+void print_array(T *arr, uint32_t size) {
     cout << "[";
     for (uint32_t i = 0; i < size - 1; i++)
         cout << arr[i] << ", ";
     cout << arr[size - 1] << "]" << endl;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     e_role role = SERVER;
     uint16_t port = 7766;
     string address = "127.0.0.1";
@@ -87,10 +81,8 @@ int main(int argc, char **argv)
     uint32_t numreps = 3;
     read_options(&argc, &argv, &role, &address, &port, &numreps, &qid);
     uint32_t startid = 0, endid = QTOTAL;
-    for (uint32_t i = 0; i < QTOTAL; i++)
-    {
-        if (QueryID[i] == qid)
-        {
+    for (uint32_t i = 0; i < QTOTAL; i++) {
+        if (QueryID[i] == qid) {
             startid = i;
             endid = i + 1;
             break;
@@ -104,13 +96,11 @@ int main(int argc, char **argv)
     gParty.Init(address, port, role);
     double times[DTOTAL];
     double costs[DTOTAL];
-    for (uint32_t i = startid; i < endid; i++)
-    {
-        auto qn = (QueryName)i;
+    for (uint32_t i = startid; i < endid; i++) {
+        auto qn = (QueryName) i;
         cout << "-------------- Query " << QueryID[i] << " --------------" << endl;
-        for (uint32_t j = 0; j < DTOTAL; j++)
-        {
-            auto ds = (DataSize)j;
+        for (uint32_t j = 0; j < DTOTAL; j++) {
+            auto ds = (DataSize) j;
             auto st = SingleQuery(qn, ds, numreps);
             times[j] = st.time / 1000.0;
             costs[j] = st.cost / 1024 / 1024.0;
