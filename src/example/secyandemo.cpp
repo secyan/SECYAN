@@ -4,7 +4,7 @@
 #include "TPCH.h"
 
 using namespace std;
-function<run_query> query_funcs[QTOTAL] = {run_Q3, run_Q10, run_Q18, run_Q8, run_Q9, run_Q5, run_Q12, run_Q6, run_Q14, run_Q17};
+function<run_query> query_funcs[QTOTAL] = {run_Q3, run_Q10, run_Q18, run_Q8, run_Q9, run_Q12, run_Q16, run_Q1, run_Q4};
 
 int main(int argc, char **)
 {

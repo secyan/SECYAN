@@ -10,9 +10,3 @@ services:
       context: ./
     volumes:
       - ./:/usr/local/project
-  demo:
-    container_name: secyan_demo
-    command: "g++ -v"
-    build:
-      dockerfile: docker/demo.dockerfile
-      context: ./
