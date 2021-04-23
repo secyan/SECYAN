@@ -506,6 +506,13 @@ void run_Q16(DataSize ds, bool printResult) {
 
 }
 
+/**
+ * Auto generated
+ * Tests passed.
+ *
+ * @param ds
+ * @param printResult
+ */
 void run_Q1(DataSize ds, bool printResult) {
 
     Relation::RelationInfo lineitem_ri = {
@@ -534,6 +541,13 @@ void run_Q1(DataSize ds, bool printResult) {
 }
 
 
+/**
+ * Auto generated
+ * Tests passed.
+ *
+ * @param ds
+ * @param printResult
+ */
 void run_Q4(DataSize ds, bool printResult) {
 
     Relation::RelationInfo orders_ri = {
