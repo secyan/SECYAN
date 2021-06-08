@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 3.12)
 project(SECYAN LANGUAGES CXX)
 cmake_policy(SET CMP0077 NEW)
 
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    set(MACOSX TRUE)
+endif()
+
 set(MODULE_NAME "SECYAN")
 set(CMAKE_THREAD_LIBS_INIT "-lpthread")
 
@@ -71,6 +75,13 @@ elseif (NOT libOTe_FOUND AND NOT TARGET libOTe::libote)
     add_subdirectory(extern/libOTe)
 endif ()
 
+if (MACOSX)
+    # Solve macOS cannot find ABP error
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I/usr/local/include")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I/Library/Frameworks/Python.framework/Versions/3.7/include/python3.7m ")
+
+endif()
+
 add_dependencies(libOTe relic_s)
 
 add_subdirectory(src/core)
@@ -85,9 +96,12 @@ find_package (Python3 COMPONENTS Interpreter Development)
 include_directories(${PYTHON_INCLUDE_DIRS})
 message([MAIN] "Found Python ${PythonLibs_VERSION}: ${PYTHON_INCLUDE_DIRS}")
 
-pybind11_add_module(${MODULE_NAME} src/core/relation.cpp)
-target_compile_definitions(${MODULE_NAME} PRIVATE VERSION_INFO=${EXAMPLE_VERSION_INFO})
 
+
+# pybind11_add_module(${MODULE_NAME} src/core/relation.cpp)
+# target_compile_definitions(${MODULE_NAME} PRIVATE VERSION_INFO=${EXAMPLE_VERSION_INFO})
+link_libraries(/usr/local/lib)
+#include_directories(/usr/local/include)
 
 if(SECYAN_TEST)
     add_subdirectory(src/test)
