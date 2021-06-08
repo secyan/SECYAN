@@ -410,7 +410,7 @@ void run_Q12(DataSize ds, bool printResult) {
             NumRows[LINEITEM][ds],
             false
     };
-    Relation::AnnotInfo lineitem_ai = {true, true};
+    Relation::AnnotInfo lineitem_ai = {false, true};
     Relation lineitem(lineitem_ri, lineitem_ai);
     filePath = GetFilePath(LINEITEM, ds);
     lineitem.LoadData(filePath.c_str(), "demo");
@@ -503,7 +503,6 @@ void run_Q16(DataSize ds, bool printResult) {
     part.RevealAnnotToOwner();
     if (printResult)
         part.Print();
-
 }
 
 /**

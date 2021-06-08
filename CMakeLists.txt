@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.12)
 project(SECYAN LANGUAGES CXX)
 cmake_policy(SET CMP0077 NEW)
 
+set(MODULE_NAME "SECYAN")
 set(CMAKE_THREAD_LIBS_INIT "-lpthread")
 
 option(SECYAN_TEST "Build tests" OFF)
@@ -74,6 +75,19 @@ add_dependencies(libOTe relic_s)
 
 add_subdirectory(src/core)
 add_subdirectory(src/example)
+
+find_package(pybind11 REQUIRED)
+include_directories(${pybind11_INCLUDE_DIRS})
+message([MAIN] "Found pybind11 v${pybind11_VERSION}: ${pybind11_INCLUDE_DIRS}")
+
+
+find_package (Python3 COMPONENTS Interpreter Development)
+include_directories(${PYTHON_INCLUDE_DIRS})
+message([MAIN] "Found Python ${PythonLibs_VERSION}: ${PYTHON_INCLUDE_DIRS}")
+
+pybind11_add_module(${MODULE_NAME} src/core/relation.cpp)
+target_compile_definitions(${MODULE_NAME} PRIVATE VERSION_INFO=${EXAMPLE_VERSION_INFO})
+
 
 if(SECYAN_TEST)
     add_subdirectory(src/test)
