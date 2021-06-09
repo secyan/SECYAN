@@ -15,6 +15,15 @@
 
 namespace py = pybind11;
 
+int main(){
+    PyObject* pInt;
+
+    Py_Initialize();
+
+    PyRun_SimpleString("import sys\nprint(sys.version)");
+
+    Py_Finalize();
+}
 
 
 PYBIND11_MODULE(aby, m){

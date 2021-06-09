@@ -37,6 +37,9 @@ class CMakeBuild(build_ext):
     def build_extension(self, ext):
         extdir = os.path.abspath(
             os.path.dirname(self.get_ext_fullpath(ext.name)))
+
+        print(f"Output dir: {extdir}, executable: {sys.executable}")
+
         cmake_args = ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + extdir,
                       '-DPYTHON_EXECUTABLE=' + sys.executable]
 
@@ -64,22 +67,23 @@ class CMakeBuild(build_ext):
 
         if not os.path.exists(self.build_temp):
             os.makedirs(self.build_temp)
+
+        os.environ['CXX'] = "/usr/local/opt/llvm/bin/clang++"
         subprocess.check_call(['cmake', ext.sourcedir] + cmake_args,
                               cwd=self.build_temp, env=env)
-        subprocess.check_call(['cmake', '--build', '.',] + build_args,
+        subprocess.check_call(['cmake', '--build', '.', '--target', 'secyan_python'] + build_args,
                               cwd=self.build_temp)
         print()  # Add an empty line for cleaner output
 
 
 setup(
-    name='python_cpp_example',
+    name='secyan_python',
     version='0.1',
-    author='Benjamin Jack',
-    author_email='benjamin.r.jack@gmail.com',
+    author='Qiwei Li',
     description='A hybrid Python/C++ test project',
     long_description='',
     # add extension module
-    ext_modules=[CMakeExtension('python_cpp_example')],
+    ext_modules=[CMakeExtension('secyan_python')],
     # add custom build_ext command
     cmdclass=dict(build_ext=CMakeBuild),
     zip_safe=False,

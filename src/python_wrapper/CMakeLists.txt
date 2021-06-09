@@ -1,13 +1,8 @@
-set(WRAPPER_NAME python_wrapper)
+set(WRAPPER_NAME secyan_python)
 
-add_library(${WRAPPER_NAME}
-        relation_wrapper.cpp
-        )
-
-target_link_libraries(${WRAPPER_NAME}
-        PUBLIC secyan
-        PUBLIC ENCRYPTO_utils::encrypto_utils
-        PUBLIC Boost::program_options)
+#add_library(${WRAPPER_NAME}
+#        relation_wrapper.cpp
+#        )
 
 
 find_package(pybind11 REQUIRED)
@@ -19,20 +14,23 @@ include_directories(${Python3_INCLUDE_DIRS})
 message([MAIN] "Found Python ${PythonLibs_VERSION}: ${Python3_INCLUDE_DIRS}")
 
 
-pybind11_add_module(${MODULE_NAME} ../core/relation.cpp)
-target_compile_definitions(${MODULE_NAME} PRIVATE)
+pybind11_add_module(${WRAPPER_NAME} ../core/relation.cpp)
+target_compile_definitions(${WRAPPER_NAME} PRIVATE)
 
-#if (MACOSX)
-#    # Solve macOS cannot find ABY error
-#    message("Running on MacOS")
-#    message("Python3 Library Dirs: ${Python3_LIBRARY_DIRS}")
-#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I/usr/local/include")
-#    #    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -L${Python3_LIBRARY_DIRS} -lpython3.9")
-#
-#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -L/Library/Frameworks/Python.framework/Versions/3.8/lib -lpython3.8")
-#endif()
-#add_executable(loop-conver relation_wrapper.cpp)
-#target_link_libraries(loop-conver ${Python3_LIBRARIES})
 
+# Include python and python libraries to the target
+# This one is required to write the wrapper
 target_include_directories(${WRAPPER_NAME} PUBLIC ${Python3_INCLUDE_DIRS})
 target_include_directories(${WRAPPER_NAME} PUBLIC ${Python3_LIBRARY_DIRS})
+target_link_libraries(${WRAPPER_NAME}
+        PUBLIC secyan
+        PUBLIC ENCRYPTO_utils::encrypto_utils
+        PUBLIC Boost::program_options
+        PUBLIC ${Python3_LIBRARIES})
+
+add_executable(run_python relation_wrapper.cpp)
+target_link_libraries(run_python
+        PUBLIC secyan
+        PUBLIC ENCRYPTO_utils::encrypto_utils
+        PUBLIC Boost::program_options
+        PUBLIC ${Python3_LIBRARIES})
