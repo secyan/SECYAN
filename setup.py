@@ -50,9 +50,12 @@ class CMakeBuild(build_ext):
             if sys.maxsize > 2 ** 32:
                 cmake_args += ['-A', 'x64']
             build_args += ['--', '/m']
+        elif platform.system() == "Darwin":
+            cmake_args += ["-DOPENSSL_ROOT_DIR=/usr/local/opt/openssl",
+                           "-DOPENSSL_LIBRARIES=/usr/local/opt/openssl/lib"]
         else:
             cmake_args += ['-DCMAKE_BUILD_TYPE=' + cfg]
-            build_args += ['--', '-j2']
+            build_args += ['--', '-j8']
 
         env = os.environ.copy()
         env['CXXFLAGS'] = '{} -DVERSION_INFO=\\"{}\\"'.format(
@@ -63,7 +66,7 @@ class CMakeBuild(build_ext):
             os.makedirs(self.build_temp)
         subprocess.check_call(['cmake', ext.sourcedir] + cmake_args,
                               cwd=self.build_temp, env=env)
-        subprocess.check_call(['cmake', '--build', '.'] + build_args,
+        subprocess.check_call(['cmake', '--build', '.',] + build_args,
                               cwd=self.build_temp)
         print()  # Add an empty line for cleaner output
 

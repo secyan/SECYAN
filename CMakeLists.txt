@@ -1,12 +1,13 @@
+set(MODULE_NAME SECYAN)
 cmake_minimum_required(VERSION 3.12)
-project(SECYAN LANGUAGES CXX)
+project(${MODULE_NAME} LANGUAGES CXX)
 cmake_policy(SET CMP0077 NEW)
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     set(MACOSX TRUE)
 endif()
 
-set(MODULE_NAME "SECYAN")
+
 set(CMAKE_THREAD_LIBS_INIT "-lpthread")
 
 option(SECYAN_TEST "Build tests" OFF)
@@ -55,7 +56,7 @@ file(COPY
 # we need to set these compile flags globally to compile libOTe and its dependencies
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -no-pie -pthread -maes -msse2 -msse3 -msse4.1 -mpclmul -mavx -mavx2")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-ignored-attributes")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-variable")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-variable -I /usr/local/lib")
 
 set(ENABLE_SIMPLESTOT ON CACHE BOOL "Enable Simplest OT for Base OTs" FORCE)
 set(ENABLE_IKNP ON CACHE BOOL "Enable IKNP for 1-out-of-2 OTs" FORCE)
@@ -75,33 +76,14 @@ elseif (NOT libOTe_FOUND AND NOT TARGET libOTe::libote)
     add_subdirectory(extern/libOTe)
 endif ()
 
-if (MACOSX)
-    # Solve macOS cannot find ABP error
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I/usr/local/include")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I/Library/Frameworks/Python.framework/Versions/3.7/include/python3.7m ")
-
-endif()
-
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I/usr/local/include")
 add_dependencies(libOTe relic_s)
 
 add_subdirectory(src/core)
+add_subdirectory(src/python_wrapper)
 add_subdirectory(src/example)
 
-find_package(pybind11 REQUIRED)
-include_directories(${pybind11_INCLUDE_DIRS})
-message([MAIN] "Found pybind11 v${pybind11_VERSION}: ${pybind11_INCLUDE_DIRS}")
 
-
-find_package (Python3 COMPONENTS Interpreter Development)
-include_directories(${PYTHON_INCLUDE_DIRS})
-message([MAIN] "Found Python ${PythonLibs_VERSION}: ${PYTHON_INCLUDE_DIRS}")
-
-
-
-# pybind11_add_module(${MODULE_NAME} src/core/relation.cpp)
-# target_compile_definitions(${MODULE_NAME} PRIVATE VERSION_INFO=${EXAMPLE_VERSION_INFO})
-link_libraries(/usr/local/lib)
-#include_directories(/usr/local/include)
 
 if(SECYAN_TEST)
     add_subdirectory(src/test)

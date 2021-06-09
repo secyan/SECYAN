@@ -6,10 +6,6 @@
 #include "aby/abyparty.h"
 #include "circuit/booleancircuits.h"
 #include <cassert>
-#include "python.h"
-#include <pybind11/pybind11.h>
-
-namespace py = pybind11;
 
 namespace SECYAN
 {
@@ -165,17 +161,4 @@ namespace SECYAN
 } // namespace SECYAN
 
 
-//
-//PYBIND11_MODULE(aby, m){
-//    py::enum_<e_role>(m, "E_role")
-//            .value("SERVER", SERVER)
-//            .value("CLIENT", CLIENT)
-//            .value("ALL", ALL)
-//            .export_values();
-//}
-//
-//PYBIND11_MODULE(relation, m){
-//    py::class_<SECYAN::Relation>(m, "Relation")
-//            .def(py::init<const SECYAN::Relation::RelationInfo, const SECYAN::Relation::AnnotInfo>())
-//            .def("loadData", &SECYAN::Relation::LoadData);
-//}
+
