@@ -3,14 +3,13 @@
 //
 #include "relation_wrapper.h"
 
-
 namespace py = pybind11;
 
 void init_relationship(py::module &m) {
     py::class_<SECYAN::Relation>(m, "Relation")
             .def(py::init<const SECYAN::Relation::RelationInfo, const SECYAN::Relation::AnnotInfo>(),
                  py::arg("relation_info"), py::arg("annot_info"))
-            .def("loadData", &SECYAN::Relation::LoadData, py::arg("file_path"), py::arg("d"))
+            .def("load_data", &SECYAN::Relation::LoadData, py::arg("file_path"), py::arg("annot_attr_name"))
             .def("reveal_annot_to_owner", &SECYAN::Relation::RevealAnnotToOwner)
             .def("print", &SECYAN::Relation::Print, py::arg("limit_size"), py::arg("show_zero_annoted_tuple"))
             .def("sort", &SECYAN::Relation::Sort)

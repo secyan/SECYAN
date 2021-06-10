@@ -8,6 +8,7 @@
 #include <algorithm>
 #include "circuit/share.h"
 #include "../core/relation.h"
+#include "../core/party.h"
 
 
 namespace py = pybind11;

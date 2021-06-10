@@ -114,6 +114,7 @@ namespace SECYAN {
         m_AI.knownByOwner = true;
     }
 
+
     void Relation::Print(size_t limit_size, bool showZeroAnnotedTuple) {
         bool dummy = IsDummy();
         if (m_RI.owner != gParty.GetRole() && m_AI.knownByOwner) {

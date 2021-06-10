@@ -108,9 +108,11 @@ namespace SECYAN
 		inline bool IsDummy() { return (!m_RI.isPublic) && (m_RI.owner != gParty.GetRole()); }
 		// Load data into the relation (for dummy relation, the first two parameters are NULL)
 		void LoadData(const char *filePath, std::string anntAttrName);
-		void RevealAnnotToOwner();												// reveal annotations to the owner
+
+		void RevealAnnotToOwner();
+		// reveal annotations to the owner
 		void Print(size_t limit_size = 100, bool showZeroAnnotedTuple = false); // only be called after revealed
-		void Sort();
+        void Sort();
 		// Note: this project operation does not elimiate duplicate tuples!
 		void Project(std::vector<std::string> &projectAttrNames);
 		void Project(const char *projectAttrName);
