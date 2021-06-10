@@ -114,9 +114,12 @@ namespace SECYAN
 		// Note: this project operation does not elimiate duplicate tuples!
 		void Project(std::vector<std::string> &projectAttrNames);
 		void Project(const char *projectAttrName);
+		void ProjectNames(std::vector<std::string> &projectAttrNames);
+
 		void Aggregate();
 		void Aggregate(const char *aggAttrName);
 		void Aggregate(std::vector<std::string> &aggAttrNames);
+        void AggregateNames(std::vector<std::string> &aggAttrNames);
 
 		void AnnotAdd(Relation &child);
 		void AnnotSub(Relation &child);
@@ -134,10 +137,16 @@ namespace SECYAN
 
 		void SemiJoin(Relation &child, const char *parentAttrName, const char *childAttrName);
 
+        void SemiJoinAttr(Relation &child, const char *parentAttrName, const char *childAttrName);
+        void SemiJoinAttrs(Relation &child, std::vector<std::string> &parentAttrNames, std::vector<std::string> &childAttrNames);
+
 		void RemoveZeroAnnotatedTuples();
 		void RevealTuples();
 		void Join(Relation &child, std::vector<std::string> &parentAttrNames, std::vector<std::string> &childAttrNames);
 		void Join(Relation &child, const char *parentAttrName, const char *childAttrName);
+
+        void JoinAttrs(Relation &child, std::vector<std::string> &parentAttrNames, std::vector<std::string> &childAttrNames);
+        void JoinAttr(Relation &child, const char *parentAttrName, const char *childAttrName);
 
 		// For debug test only
 		void PrintTableWithoutRevealing(const char *msg = NULL, int limit_size = 100);

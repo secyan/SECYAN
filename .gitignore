@@ -10,3 +10,7 @@ cmake-build-release-remote-host
 cmake-build-release-remote-host/
 build
 *.egg-info
+*.egg
+*.so
+Makefile
+test.py

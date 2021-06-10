@@ -1,7 +1,7 @@
 add_executable(benchmark
     TPCH.cpp
     benchmark.cpp
-)
+        )
 
 add_executable(secyandemo
     TPCH.cpp
