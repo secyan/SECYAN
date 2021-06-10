@@ -50,21 +50,23 @@ class CMakeBuild(build_ext):
         else:
             build_args += ['--', '-j8']
 
-        if not os.path.exists(self.build_temp):
-            os.makedirs(self.build_temp)
+        build_path_suffix = os.environ.get('build_dir')
+        build_path = self.build_temp if not build_path_suffix else path.join(build_path_suffix, self.build_temp)
+        if not os.path.exists(build_path):
+            os.makedirs(build_path)
 
         subprocess.check_call(["cmake"] + cmake_args + [ext.sourcedir],
-                              cwd=self.build_temp
+                              cwd=build_path
                               )
 
         subprocess.check_call(['cmake', '--build', ".", '--target', 'secyan_python'] + build_args,
-                              cwd=self.build_temp)
-
-        wrapper_path = path.join(self.build_temp, 'src/python_wrapper')
+                              cwd=build_path)
+        copy_target_path = extdir if not os.environ.get('output_dir') else os.environ.get('output_dir')
+        wrapper_path = path.join(build_path, 'src/python_wrapper')
         for file in os.listdir(wrapper_path):
             if file.endswith(".so"):
                 file_path = path.join(wrapper_path, file)
-                shutil.copy(file_path, extdir)
+                shutil.copy(file_path, copy_target_path)
 
         print()
 

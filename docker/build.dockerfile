@@ -22,13 +22,18 @@ RUN apt install cmake
 RUN apt install -y libssl-dev
 RUN apt install -y libgmp-dev
 RUN apt install -y libboost-all-dev
+# Required for python binding
+RUN apt install -y ninja-build
+RUN apt install --no-install-recommends -y python3 python3-pip python3-dev
+RUN apt install -y git
+WORKDIR /usr/local/project
+RUN git clone https://github.com/pybind/pybind11.git
+WORKDIR /usr/local/project/pybind11
+RUN mkdir build
+WORKDIR /usr/local/project/pybind11/build
+RUN cmake ..
+RUN make install -j4
 WORKDIR /usr/local/project
 
-COPY . .
-RUN mkdir Release
-WORKDIR /usr/local/project/Release
-RUN cmake .. -DCMAKE_BUILD_TYPE=Release
-RUN make -j 8
 
-WORKDIR /usr/local/project/Release/src/example
-#CMD ["./secyandemo"]
+#CMD ["/usr/sbin/sshd", "-D", "-e", "-f", "/etc/ssh/sshd_config_test_clion"]
