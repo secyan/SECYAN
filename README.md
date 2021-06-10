@@ -1,14 +1,16 @@
 # Secure Yannakakis: Join-Aggregate Queries over Private Data
 
---------------------------------------------------------------------------------
+---
 
 # Requirements
+
 ## For Debian Linux
- - build-essential (gcc >= 8)
- - cmake >= 3.12
- - libssl-dev
- - libgmp-dev
- - libboost-all-dev (Boost >= 1.66)
+
+- build-essential (gcc >= 8)
+- cmake >= 3.12
+- libssl-dev
+- libgmp-dev
+- libboost-all-dev (Boost >= 1.66)
 
 ## For macOS
 
@@ -16,6 +18,7 @@
 - brew install openssl
 - brew install gmp
 - brew install boost
+- brew install pybind11
 
 CMAKE-flag -DOPENSSL_ROOT_DIR=/usr/local/opt/openssl -DOPENSSL_LIBRARIES=/usr/local/opt/openssl/lib
 
@@ -24,21 +27,24 @@ There exists some issues with macOS. Please use docker to run the application on
 # Run the example in Docker
 
 First install docker on your local machine, and then in the main folder, run
+
 ```bash
 docker-compose build dev
 ```
+
 ```bash
 dokcer-compose up dev
 ```
 
 And now you can ssh into the container like
+
 ```
 ssh user@localhost -p 2222
 ```
 
-
 # Configure and Compile
-``` bash
+
+```bash
 git clone --recurse-submodules https://github.com/Aqua-Dream/SECYAN
 cd SECYAN
 mkdir Release
@@ -48,8 +54,10 @@ make -j 8
 ```
 
 # Run Demo
+
 Switch to the output folder `Release/src/example`.
-``` bash
+
+```bash
 # Server
 > ./secyandemo
 Who are you? [0. Server, 1. Client]: 0
@@ -63,7 +71,8 @@ Running time: 5277ms
 Communication cost: 266.873 MB
 Finished!
 ```
-``` bash
+
+```bash
 # Client
 > ./secyandemo
 Who are you? [0. Server, 1. Client]: 1
@@ -81,8 +90,10 @@ Finished!
 ```
 
 # Run Benchmark
+
 Switch to the output folder `Release/src/example`.
-``` bash
+
+```bash
 > ./benchmark
 Usage: ./benchmark
  -r [Role: 0/1, default: 0 (SERVER), required]
@@ -97,9 +108,11 @@ Program exiting
 ```
 
 # Remark
- - SECYAN only read the last 8 digits of string from data file. For example, the the first row of column `c_name` in `customer.tbl` is `Customer#000000001`, but it will be outputted as `00000001`.
- - To use your own data, please refer to the format of files under `data` folder. SECYAN currently cannot generate annotations automatically. You need to write the annotation columns on your own.
- - To run your own query, please refer to the file `data/TPCH.cpp`. SECYAN currently cannot generate codes from SQL automatically. You need to rewrite your query into combinations of operators (`Aggregation`,`SemiJoin`,`Join`,etc.).
+
+- SECYAN only read the last 8 digits of string from data file. For example, the the first row of column `c_name` in `customer.tbl` is `Customer#000000001`, but it will be outputted as `00000001`.
+- To use your own data, please refer to the format of files under `data` folder. SECYAN currently cannot generate annotations automatically. You need to write the annotation columns on your own.
+- To run your own query, please refer to the file `data/TPCH.cpp`. SECYAN currently cannot generate codes from SQL automatically. You need to rewrite your query into combinations of operators (`Aggregation`,`SemiJoin`,`Join`,etc.).
 
 # Acknowledgment
+
 Thank [SixSiebenUno](https://github.com/SixSiebenUno) for helping writing the code.
