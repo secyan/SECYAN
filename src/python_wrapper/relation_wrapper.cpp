@@ -1,24 +1,16 @@
 //
 // Created by Qiwei Li on 6/9/21.
 //
-#include "Python.h"
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
-#include <algorithm>
-#include "circuit/share.h"
-#include "../core/relation.h"
+#include "relation_wrapper.h"
+
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(aby, m) {
-}
-
-PYBIND11_MODULE(secyan_python, m) {
-
-
+void init_relationship(py::module &m) {
     py::class_<SECYAN::Relation>(m, "Relation")
-            .def(py::init<const SECYAN::Relation::RelationInfo, const SECYAN::Relation::AnnotInfo>())
-            .def("loadData", &SECYAN::Relation::LoadData, py::arg("file_path"), py::arg("annot_attr_name"))
+            .def(py::init<const SECYAN::Relation::RelationInfo, const SECYAN::Relation::AnnotInfo>(),
+                 py::arg("relation_info"), py::arg("annot_info"))
+            .def("loadData", &SECYAN::Relation::LoadData, py::arg("file_path"), py::arg("d"))
             .def("reveal_annot_to_owner", &SECYAN::Relation::RevealAnnotToOwner)
             .def("print", &SECYAN::Relation::Print, py::arg("limit_size"), py::arg("show_zero_annoted_tuple"))
             .def("sort", &SECYAN::Relation::Sort)
@@ -45,38 +37,54 @@ PYBIND11_MODULE(secyan_python, m) {
                  py::arg("child_attr_names"))
             .def("remove_zero_annotated_tuples", &SECYAN::Relation::RemoveZeroAnnotatedTuples)
             .def("reveal_tuples", &SECYAN::Relation::RevealTuples)
-            .def("print_table_without_revealing", &SECYAN::Relation::PrintTableWithoutRevealing, py::arg("msg"), py::arg("limit_size"));
+            .def("print_table_without_revealing", &SECYAN::Relation::PrintTableWithoutRevealing, py::arg("msg"),
+                 py::arg("limit_size"));
 
+};
 
-    py::enum_<e_role>(m, "E_role")
-            .value("SERVER", SERVER)
-            .value("CLIENT", CLIENT)
-            .value("ALL", ALL);
-
-    py::enum_<SECYAN::Relation::DataType>(m, "DataType")
+void init_DataType(py::module &m) {
+    py::enum_<SECYAN::Relation::DataType>(m,
+                                          "DataType")
             .value("INT", SECYAN::Relation::DataType::INT)
             .value("DECIMAL", SECYAN::Relation::DataType::DECIMAL)
             .value("DATE", SECYAN::Relation::DataType::DATE)
             .value("STRING", SECYAN::Relation::DataType::STRING);
+}
 
-    py::class_<SECYAN::Relation::RelationInfo>(m, "RelationInfo")
-            .def(py::init<e_role, bool,
-                         const std::vector<std::string>,
-                         std::vector<SECYAN::Relation::DataType>,
-                         size_t, bool>(),
-                 py::arg("owner") = SERVER, py::arg("is_public") = true, py::arg("attr_names"),
-                 py::arg("attr_types"), py::arg("num_rows") = 100, py::arg("sorted") = true)
+void init_e_role(py::module &m) {
+    py::enum_<e_role>(m,
+                      "E_role")
+            .value("SERVER", SERVER)
+            .value("CLIENT", CLIENT)
+            .value("ALL", ALL);
+}
+
+void init_relation_info(py::module &m) {
+    py::class_<SECYAN::Relation::RelationInfo>(m,
+                                               "RelationInfo")
+            .
+
+                    def(py::init<e_role, bool,
+                                const std::vector<std::string>,
+                                std::vector<SECYAN::Relation::DataType>,
+                                size_t, bool>(),
+                        py::arg("owner"), py::arg("is_public"), py::arg("attr_names"),
+                        py::arg("attr_types"), py::arg("num_rows"), py::arg("sorted"))
             .def_readwrite("owner", &SECYAN::Relation::RelationInfo::owner, "Owner of this relationship")
             .def_readwrite("is_public", &SECYAN::Relation::RelationInfo::isPublic, "Is Public to everyone")
             .def_readwrite("attr_names", &SECYAN::Relation::RelationInfo::attrNames)
             .def_readwrite("attr_types", &SECYAN::Relation::RelationInfo::attrTypes)
             .def_readwrite("num_rows", &SECYAN::Relation::RelationInfo::numRows)
             .def_readwrite("sorted", &SECYAN::Relation::RelationInfo::sorted);
+}
 
+void init_annot_info(py::module &m) {
+    py::class_<SECYAN::Relation::AnnotInfo>(m,
+                                            "AnnotInfo")
+            .def(py::init<bool, bool>(), py::arg("is_boolean")
 
-    py::class_<SECYAN::Relation::AnnotInfo>(m, "AnnotInfo")
-            .def(py::init<bool, bool>(), py::arg("is_boolean") = true, py::arg("known_by_owner") = true)
+                    = true, py::arg("known_by_owner") = true)
             .def_readwrite("is_boolean", &SECYAN::Relation::AnnotInfo::isBoolean)
             .def_readwrite("known_by_owner", &SECYAN::Relation::AnnotInfo::knownByOwner);
-
 }
+

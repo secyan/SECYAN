@@ -4,10 +4,17 @@
 #include "RNG.h"
 
 using namespace osuCrypto;
+using namespace std;
 
 namespace SECYAN
 {
 	Party gParty;
+
+    void initGlobalParty(std::string address, std::uint16_t port, e_role role){
+        cout << "Establishing connection... ";
+	    gParty.Init(address, port, role);
+        cout << "Finished!" << endl;
+	}
 
 	void Party::Init(std::string address, uint16_t port, e_role role)
 	{

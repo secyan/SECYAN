@@ -15,7 +15,7 @@ namespace SECYAN
 	class Party
 	{
 	public:
-		void Init(std::string address, uint16_t port, e_role role);
+        void Init(std::string address, uint16_t port, e_role role);
 		std::string GetAddress();
 		uint16_t GetPort();
 		e_role GetRole();
@@ -77,4 +77,5 @@ namespace SECYAN
 	};
 	// A global Party
 	extern Party gParty;
+    void initGlobalParty(std::string address, std::uint16_t port, e_role role);
 } // namespace SECYAN

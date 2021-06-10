@@ -15,7 +15,7 @@ include_directories(${Python3_INCLUDE_DIRS})
 message([MAIN] "Found Python ${PythonLibs_VERSION}: ${Python3_INCLUDE_DIRS}")
 
 
-pybind11_add_module(${WRAPPER_NAME} relation_wrapper.cpp)
+pybind11_add_module(${WRAPPER_NAME} relation_wrapper.cpp secyan_python_wrapper.cpp party_wrapper.cpp)
 
 target_compile_definitions(${WRAPPER_NAME} PRIVATE)
 
