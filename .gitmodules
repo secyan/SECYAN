@@ -3,7 +3,7 @@
 	url = https://github.com/osu-crypto/libOTe
 [submodule "extern/ABY"]
 	path = extern/ABY
-	url = https://github.com/encryptogroup/ABY
+	url = https://github.com/secyan/ABY.git
 [submodule "extern/pybind11"]
 	path = extern/pybind11
 	url = https://github.com/pybind/pybind11.git
