@@ -39,7 +39,8 @@ class CMakeBuild(build_ext):
 
         extdir = os.path.abspath(
             os.path.dirname(self.get_ext_fullpath(ext.name)))
-        cmake_args = ["-DCMAKE_BUILD_TYPE=Release", "-DCMAKE_CXX_STANDARD=17", "-DPYTHON_EXECUTABLE=" + sys.executable, "-fPIC"]
+        cmake_args = ["-DCMAKE_BUILD_TYPE=Release",
+                      "-DCMAKE_CXX_STANDARD=17", "-DPYTHON_EXECUTABLE=" + sys.executable]
         build_args = ["-j8"]
 
         if platform.system() == "Darwin":
@@ -51,7 +52,8 @@ class CMakeBuild(build_ext):
             build_args += ['--', '-j8']
 
         build_path_suffix = os.environ.get('build_dir')
-        build_path = self.build_temp if not build_path_suffix else path.join(build_path_suffix, self.build_temp)
+        build_path = self.build_temp if not build_path_suffix else path.join(
+            build_path_suffix, self.build_temp)
         if not os.path.exists(build_path):
             os.makedirs(build_path)
 
@@ -61,7 +63,8 @@ class CMakeBuild(build_ext):
 
         subprocess.check_call(['cmake', '--build', ".", '--target', 'secyan_python'] + build_args,
                               cwd=build_path)
-        copy_target_path = extdir if not os.environ.get('output_dir') else os.environ.get('output_dir')
+        copy_target_path = extdir if not os.environ.get(
+            'output_dir') else os.environ.get('output_dir')
         wrapper_path = path.join(build_path, 'src/python_wrapper')
         for file in os.listdir(wrapper_path):
             if file.endswith(".so"):
