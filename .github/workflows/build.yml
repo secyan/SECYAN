@@ -3,37 +3,37 @@ name: Build Release
 on: [push]
 
 jobs:
-  # macOS:
-  #   runs-on: macos-latest
-  #   strategy:
-  #     matrix:
-  #       python: [3.6, 3.7, 3.8, 3.9]
-  #   steps:
-  #   - uses: actions/checkout@v2
-  #   - name: Set up Python
-  #     uses: actions/setup-python@v1
-  #     with:
-  #       python-version: ${{ matrix.python }}
-  #   - run: git submodule update --init --recursive
-  #   - run: brew install openssl
-  #   - run: brew install gmp
-  #   - run: brew install boost
-  #   - run: brew install pybind11
-  #   - name: Build Output
-  #     run: python3 setup.py develop
-  #   - name: Upload binaries to release
-  #     uses: svenstaro/upload-release-action@v2
-  #     with:
-  #       repo_token: ${{ secrets.GITHUB_TOKEN }}
-  #       file: ./*.so
-  #       tag: ${{ github.ref }}
-  #       overwrite: true
-  #       file_glob: true
+  macOS:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        python: [3.6, 3.7, 3.8, 3.9]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python }}
+    - run: git submodule update --init --recursive
+    - run: brew install openssl
+    - run: brew install gmp
+    - run: brew install boost
+    - run: brew install pybind11
+    - name: Build Output
+      run: python3 setup.py develop
+    - name: Upload binaries to release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: ./*.so
+        tag: ${{ github.ref }}
+        overwrite: true
+        file_glob: true
   ubuntu:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: [3.6]
+        python: [3.6, 3.7, 3.8, 3.9]
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python
