@@ -15,7 +15,6 @@ install_dependencies = [
     "cmake",
     "rsync",
     "tar",
-    "python",
     "libssl-dev",
     "libgmp-dev",
     "libboost-all-dev",
