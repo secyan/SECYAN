@@ -3,6 +3,7 @@ from secyan_python.constant import DataType, E_role
 from secyan_python.utils import init_global_party
 from os import path
 import os
+from multiprocessing import Queue, Process
 
 filenames = ["customer.tbl",
              "orders.tbl",
@@ -116,17 +117,30 @@ def q3(size_index: int):
     orders.aggregate_names(["o_orderkey", "o_orderdate", "o_shippriority"])
     orders.reveal_annot_to_owner()
 
-    results = orders.return_print_results(limit_size=10, show_zero_annoted_tuple=True)
-    for result in results:
-        print(result)
+    results = customer.return_print_results(limit_size=10, show_zero_annoted_tuple=True)
+    return results
+
+
+def run_example(query_func, role: E_role, size_index, queue: Queue):
+    init_global_party(address="0.0.0.0", port=7766, role=role)
+    result = query_func(size_index)
+    queue.put(result)
 
 
 if __name__ == '__main__':
-    if os.environ.get("role") == "client":
-        print("Start as client")
-        init_global_party(address="0.0.0.0", port=7766, role=E_role.CLIENT)
-    else:
-        print("Start as server")
-        init_global_party(address="0.0.0.0", port=7766, role=E_role.SERVER)
+    client_queue = Queue()
+    server_queue = Queue()
 
-    q3(0)
+    print("Start Client")
+    client = Process(target=run_example, args=(q3, E_role.CLIENT, 0, client_queue))
+
+    print("Start as server")
+    server = Process(target=run_example, args=(q3, E_role.SERVER, 0, server_queue))
+
+    client.start()
+    server.start()
+
+    client.join()
+    server.join()
+
+    print(client_queue.get())
