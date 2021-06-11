@@ -40,7 +40,7 @@ class CMakeBuild(build_ext):
         extdir = os.path.abspath(
             os.path.dirname(self.get_ext_fullpath(ext.name)))
         cmake_args = ["-DCMAKE_BUILD_TYPE=Release",
-                      "-DCMAKE_CXX_STANDARD=17", "-DPYTHON_EXECUTABLE=" + sys.executable]
+                      "-DCMAKE_CXX_STANDARD=17", "-DPYTHON_EXECUTABLE=" + sys.executable, "-DCMAKE_POSITION_INDEPENDENT_CODE=on"]
         build_args = ["-j8"]
 
         if platform.system() == "Darwin":

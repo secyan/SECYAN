@@ -21,6 +21,7 @@ install_dependencies = [
     "ninja-build",
     "python3-dev",
     "git",
+    "python3-setuptools",
 ]
 
 curdir = os.getcwd()
