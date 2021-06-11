@@ -2,6 +2,8 @@
 
 ---
 
+More Docs are under /docs folder
+
 # Requirements
 
 ## For Debian Linux
@@ -21,8 +23,6 @@
 - brew install pybind11
 
 CMAKE-flag -DOPENSSL_ROOT_DIR=/usr/local/opt/openssl -DOPENSSL_LIBRARIES=/usr/local/opt/openssl/lib
-
-There exists some issues with macOS. Please use docker to run the application on macOS
 
 # Run the example in Docker
 
