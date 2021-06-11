@@ -2,12 +2,9 @@ name: Build Release
 
 on:
   push:
-    paths:
-      - "src/**"
-      - "setup.py"
-      - "CMakeLists.txt"
-      - "setup-scripts"
-      - "*.yml"
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
 
 jobs:
   macOS:
