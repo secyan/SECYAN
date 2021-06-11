@@ -1,88 +1,129 @@
+# -*- coding: utf-8 -*-
 import os
-import re
-import sys
-import sysconfig
 import platform
+import sys
 import subprocess
 from os import path
-from distutils.version import LooseVersion
+import shutil
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
-import shutil
+
+# Convert distutils Windows platform specifiers to CMake -A arguments
+PLAT_TO_CMAKE = {
+    "win32": "Win32",
+    "win-amd64": "x64",
+    "win-arm32": "ARM",
+    "win-arm64": "ARM64",
+}
 
 
+# A CMakeExtension needs a sourcedir instead of a file list.
+# The name must be the _single_ output extension from the CMake build.
+# If you need multiple extensions, see scikit-build.
 class CMakeExtension(Extension):
-    def __init__(self, name, sourcedir=''):
+    def __init__(self, name, sourcedir=""):
         Extension.__init__(self, name, sources=[])
         self.sourcedir = os.path.abspath(sourcedir)
 
 
 class CMakeBuild(build_ext):
-    def run(self):
-        try:
-            out = subprocess.check_output(['cmake', '--version'])
-        except OSError:
-            raise RuntimeError(
-                "CMake must be installed to build the following extensions: " +
-                ", ".join(e.name for e in self.extensions))
-
-        if platform.system() == "Windows":
-            cmake_version = LooseVersion(re.search(r'version\s*([\d.]+)',
-                                                   out.decode()).group(1))
-            if cmake_version < '3.1.0':
-                raise RuntimeError("CMake >= 3.1.0 is required on Windows")
-
-        for ext in self.extensions:
-            self.build_extension(ext)
-
     def build_extension(self, ext):
+        extdir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
 
-        extdir = os.path.abspath(
-            os.path.dirname(self.get_ext_fullpath(ext.name)))
-        cmake_args = ["-DCMAKE_BUILD_TYPE=Release",
-                      "-DCMAKE_CXX_STANDARD=17", "-DPYTHON_EXECUTABLE=" + sys.executable, "-DCMAKE_POSITION_INDEPENDENT_CODE=on"]
-        build_args = ["-j8"]
+        # required for auto-detection of auxiliary "native" libs
+        if not extdir.endswith(os.path.sep):
+            extdir += os.path.sep
+
+        cfg = "Debug" if self.debug else "Release"
+
+        # CMake lets you override the generator - we need to check this.
+        # Can be set with Conda-Build, for example.
+        cmake_generator = os.environ.get("CMAKE_GENERATOR", "")
+
+        # Set Python_EXECUTABLE instead if you use PYBIND11_FINDPYTHON
+        # EXAMPLE_VERSION_INFO shows you how to pass a value into the C++ code
+        # from Python.
+        cmake_args = [
+            "-DPYTHON_EXECUTABLE={}".format(sys.executable),
+            "-DEXAMPLE_VERSION_INFO={}".format(self.distribution.get_version()),
+            "-DCMAKE_BUILD_TYPE={}".format(cfg),
+            "-DCMAKE_POSITION_INDEPENDENT_CODE=on"
+
+        ]
+        build_args = []
 
         if platform.system() == "Darwin":
             cmake_args += ["-DOPENSSL_ROOT_DIR=/usr/local/opt/openssl",
                            "-DOPENSSL_LIBRARIES=/usr/local/opt/openssl/lib"]
 
-            os.environ['CXX'] = "/usr/local/opt/llvm/bin/clang++"
+        if self.compiler.compiler_type != "msvc":
+            # Using Ninja-build since it a) is available as a wheel and b)
+            # multithreads automatically. MSVC would require all variables be
+            # exported for Ninja to pick it up, which is a little tricky to do.
+            # Users can override the generator with CMAKE_GENERATOR in CMake
+            # 3.15+.
+            if not cmake_generator:
+                cmake_args += ["-GNinja"]
+
         else:
-            build_args += ['--', '-j8']
 
-        build_path_suffix = os.environ.get('build_dir')
-        build_path = self.build_temp if not build_path_suffix else path.join(
-            build_path_suffix, self.build_temp)
-        if not os.path.exists(build_path):
-            os.makedirs(build_path)
+            # Single config generators are handled "normally"
+            single_config = any(x in cmake_generator for x in {"NMake", "Ninja"})
 
-        subprocess.check_call(["cmake"] + cmake_args + [ext.sourcedir],
-                              cwd=build_path
-                              )
+            # CMake allows an arch-in-generator style for backward compatibility
+            contains_arch = any(x in cmake_generator for x in {"ARM", "Win64"})
 
-        subprocess.check_call(['cmake', '--build', ".", '--target', 'secyan_python'] + build_args,
-                              cwd=build_path)
-        copy_target_path = extdir if not os.environ.get(
-            'output_dir') else os.environ.get('output_dir')
-        wrapper_path = path.join(build_path, 'src/python_wrapper')
+            # Specify the arch if using MSVC generator, but only if it doesn't
+            # contain a backward-compatibility arch spec already in the
+            # generator name.
+            if not single_config and not contains_arch:
+                cmake_args += ["-A", PLAT_TO_CMAKE[self.plat_name]]
+
+            # Multi-config generators have a different way to specify configs
+            if not single_config:
+                build_args += ["--config", cfg]
+
+        # Set CMAKE_BUILD_PARALLEL_LEVEL to control the parallel build level
+        # across all generators.
+        if "CMAKE_BUILD_PARALLEL_LEVEL" not in os.environ:
+            # self.parallel is a Python 3 only way to set parallel jobs by hand
+            # using -j in the build_ext call, not supported by pip or PyPA-build.
+            if hasattr(self, "parallel") and self.parallel:
+                # CMake 3.12+ only.
+                build_args += ["-j{}".format(self.parallel)]
+
+        if not os.path.exists(self.build_temp):
+            os.makedirs(self.build_temp)
+
+        subprocess.check_call(
+            ["cmake", ext.sourcedir] + cmake_args, cwd=self.build_temp
+        )
+        subprocess.check_call(
+            ["cmake", "--build", "."] + build_args, cwd=self.build_temp
+        )
+
+        wrapper_path = path.join(self.build_temp, 'src/python_wrapper')
+        if not os.path.exists(extdir):
+            os.mkdir(extdir)
+        print(f"Wrapper path: {wrapper_path}")
         for file in os.listdir(wrapper_path):
             if file.endswith(".so"):
                 file_path = path.join(wrapper_path, file)
-                shutil.copy(file_path, copy_target_path)
 
-        print()
+                shutil.copy(file_path, extdir)
 
 
+
+# The information here can also be placed in setup.cfg - better separation of
+# logic and declaration, and simpler if you include description/version in a file.
 setup(
-    name='secyan_python',
-    version='0.1',
-    author='Qiwei Li',
-    description='A hybrid Python/C++ test project',
-    long_description='',
-    # add extension module
-    ext_modules=[CMakeExtension('secyan_python')],
-    # add custom build_ext command
-    cmdclass=dict(build_ext=CMakeBuild),
+    name="secyan_python",
+    version="0.0.1",
+    author="Dean Moldovan",
+    author_email="sirily1997@gmail.com",
+    description="A test project using pybind11 and CMake",
+    long_description="",
+    ext_modules=[CMakeExtension("secyan_python")],
+    cmdclass={"build_ext": CMakeBuild},
     zip_safe=False,
 )

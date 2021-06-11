@@ -35,3 +35,4 @@ subprocess.check_call(
 subprocess.check_call(["mkdir", "build"], cwd=pybind11_path)
 subprocess.check_call(["cmake", ".."], cwd=pybind11_build_path)
 subprocess.check_call(["make", "install",  "-j8"], cwd=pybind11_build_path)
+

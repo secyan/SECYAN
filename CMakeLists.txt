@@ -10,7 +10,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     set(MACOSX TRUE)
-endif()
+endif ()
 
 
 set(CMAKE_THREAD_LIBS_INIT "-lpthread")
@@ -19,7 +19,9 @@ option(SECYAN_TEST "Build tests" OFF)
 set(SECYAN_SOURCE_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 set(SECYAN_BINARY_ROOT "${CMAKE_CURRENT_BINARY_DIR}")
 
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
+message("Binary Root: ${SECYAN_BINARY_ROOT}")
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake")
 set(Boost_USE_STATIC_LIBS OFF CACHE BOOL "Use shared boost libraries" FORCE)
@@ -48,15 +50,14 @@ elseif (NOT ABY_FOUND AND NOT TARGET ABY::aby)
     add_subdirectory(extern/ABY)
 endif ()
 
-# relic is already compiled by ENCRYPTO_utils, which is ABY's dependency
 set(RLC_LIBRARY "${SECYAN_BINARY_ROOT}/extern/ABY/lib/librelic_s.a")
 
 file(COPY
         "${PROJECT_SOURCE_DIR}/extern/ABY/extern/ENCRYPTO_utils/extern/relic/include/"
         "${SECYAN_BINARY_ROOT}/extern/ABY/extern/ENCRYPTO_utils/extern/relic/include/relic_conf.h"
-    DESTINATION
+        DESTINATION
         "${PROJECT_BINARY_DIR}/include/relic"
-)
+        )
 
 # we need to set these compile flags globally to compile libOTe and its dependencies
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -no-pie -pthread -maes -msse2 -msse3 -msse4.1 -mpclmul -mavx -mavx2")
@@ -89,7 +90,6 @@ add_subdirectory(src/python_wrapper)
 add_subdirectory(src/example)
 
 
-
-if(SECYAN_TEST)
+if (SECYAN_TEST)
     add_subdirectory(src/test)
-endif(SECYAN_TEST)
+endif (SECYAN_TEST)

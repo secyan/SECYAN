@@ -11,6 +11,7 @@ add_library(secyan
     OT.cpp
 )
 
+
 target_link_libraries(secyan INTERFACE
         ABY::aby
         libOTe

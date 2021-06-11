@@ -16,3 +16,4 @@ Makefile
 test.py
 docker-build
 docker-output
+test_build

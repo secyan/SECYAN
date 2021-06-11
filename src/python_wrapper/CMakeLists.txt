@@ -1,9 +1,5 @@
 set(WRAPPER_NAME secyan_python)
 
-#add_library(${WRAPPER_NAME}
-#        relation_wrapper.cpp
-#        )
-
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 
 find_package(pybind11 REQUIRED)
@@ -23,13 +19,9 @@ target_compile_definitions(${WRAPPER_NAME} PRIVATE)
 # This one is required to write the wrapper
 target_include_directories(${WRAPPER_NAME} PUBLIC ${Python3_INCLUDE_DIRS})
 target_include_directories(${WRAPPER_NAME} PUBLIC ${Python3_LIBRARY_DIRS})
+
+
 target_link_libraries(${WRAPPER_NAME}
         PUBLIC secyan
-        PUBLIC ${Python3_LIBRARIES})
-
-# add_executable(run_python relation_wrapper.cpp)
-# target_link_libraries(run_python
-#         PUBLIC secyan
-#         PUBLIC ENCRYPTO_utils::encrypto_utils
-#         PUBLIC Boost::program_options
-#         PUBLIC ${Python3_LIBRARIES})
+        PUBLIC ${Python3_LIBRARIES}
+        )
