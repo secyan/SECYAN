@@ -3,10 +3,11 @@ name: Build Release
 on:
   push:
     paths:
-      - "src"
+      - "src/**"
       - "setup.py"
       - "CMakeLists.txt"
       - "setup-scripts"
+      - "*.yml"
 
 jobs:
   macOS:
