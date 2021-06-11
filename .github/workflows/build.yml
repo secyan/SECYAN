@@ -23,6 +23,7 @@ jobs:
     - run: brew install gmp
     - run: brew install boost
     - run: brew install pybind11
+    - run: brew install ninja
     - name: Build Output
       run: python3 setup.py develop
     - name: Upload binaries to release
