@@ -12,6 +12,9 @@
 #include "RNG.h"
 #include <unordered_set>
 
+using namespace std;
+
+
 namespace SECYAN {
     // Take a subsequence of an array (override!)
     template<typename T>
@@ -171,6 +174,70 @@ namespace SECYAN {
         if (printed == 0)
             std::cout << "Empty Relation!" << std::endl;
         std::cout << std::endl;
+    }
+
+
+    vector<vector<DynamicListType>> Relation::ReturnPrintResults(size_t limit_size, bool showZeroAnnotedTuple) {
+        bool dummy = IsDummy();
+        vector<vector<DynamicListType>> results = {};
+
+        if (m_RI.owner != gParty.GetRole() && m_AI.knownByOwner) {
+            return results;
+        }
+
+        vector<DynamicListType> columnNames = {};
+        columnNames.emplace_back("row_num");
+        if (!dummy)
+            for (const auto &attrName : m_RI.attrNames)
+                columnNames.push_back(attrName);
+
+        columnNames.emplace_back("annotation");
+        results.emplace_back(columnNames);
+
+        uint64_t i_value, year, month, day;
+        uint32_t out, printed = 0;
+        float f_value;
+        const int arrlen = sizeof(uint64_t) / sizeof(char);
+        char padded_str[arrlen + 1] = "";
+        for (uint32_t i = 0; i < m_RI.numRows && printed < limit_size; i++) {
+            if (m_AI.knownByOwner && (m_Annot[i] == 0 && !showZeroAnnotedTuple || m_Tuples[i].IsDummy()))
+                continue;
+            printed++;
+            vector<DynamicListType> row = {};
+
+            row.emplace_back((int) i + 1);
+            if (!dummy) {
+                for (uint32_t j = 0; j < m_RI.attrNames.size(); ++j) {
+                    switch (m_RI.attrTypes[j]) {
+                        case DataType::INT:
+                            row.emplace_back((int) m_Tuples[i][j]);
+                            break;
+                        case DataType::STRING:
+                            *(uint64_t *) padded_str = m_Tuples[i][j];
+                            row.emplace_back(padded_str);
+                            break;
+                        case DataType::DATE:
+                            i_value = m_Tuples[i][j];
+                            day = i_value % 100;
+                            i_value /= 100;
+                            month = i_value % 100;
+                            i_value /= 100;
+                            year = i_value;
+                            row.emplace_back(DateTime(month, year, day));
+                            break;
+                        case DataType::DECIMAL:
+                            f_value = (float) (int) m_Tuples[i][j] / 100;
+                            std::cout << std::setprecision(2) << std::fixed << f_value;
+                            row.emplace_back(f_value);
+                            break;
+                    }
+                }
+            }
+            row.emplace_back((int) m_Annot[i]);
+            results.emplace_back(row);
+        }
+
+        return results;
     }
 
     void Relation::PrintTableWithoutRevealing(const char *msg, int limit_size) {

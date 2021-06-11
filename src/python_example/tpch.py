@@ -116,7 +116,9 @@ def q3(size_index: int):
     orders.aggregate_names(["o_orderkey", "o_orderdate", "o_shippriority"])
     orders.reveal_annot_to_owner()
 
-    orders.print(limit_size=10, show_zero_annoted_tuple=True)
+    results = orders.return_print_results(limit_size=10, show_zero_annoted_tuple=True)
+    for result in results:
+        print(result)
 
 
 if __name__ == '__main__':

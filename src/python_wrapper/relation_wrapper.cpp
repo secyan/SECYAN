@@ -37,7 +37,9 @@ void init_relationship(py::module &m) {
             .def("remove_zero_annotated_tuples", &SECYAN::Relation::RemoveZeroAnnotatedTuples)
             .def("reveal_tuples", &SECYAN::Relation::RevealTuples)
             .def("print_table_without_revealing", &SECYAN::Relation::PrintTableWithoutRevealing, py::arg("msg"),
-                 py::arg("limit_size"));
+                 py::arg("limit_size"))
+            .def("return_print_results", &SECYAN::Relation::ReturnPrintResults, py::arg("limit_size") = 100,
+                 py::arg("show_zero_annoted_tuple") = false);
 
 };
 
@@ -85,5 +87,13 @@ void init_annot_info(py::module &m) {
                     = true, py::arg("known_by_owner") = true)
             .def_readwrite("is_boolean", &SECYAN::Relation::AnnotInfo::isBoolean)
             .def_readwrite("known_by_owner", &SECYAN::Relation::AnnotInfo::knownByOwner);
+}
+
+void init_date_time(py::module &m) {
+    py::class_<SECYAN::DateTime>(m, "DateTime")
+            .def(py::init<int, int, int>(), py::arg("month"), py::arg("year"), py::arg("day"))
+            .def_readwrite("month", &SECYAN::DateTime::day)
+            .def_readwrite("year", &SECYAN::DateTime::year)
+            .def_readwrite("day", &SECYAN::DateTime::day);
 }
 
