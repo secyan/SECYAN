@@ -40,7 +40,7 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: ${{ matrix.python }}
-      run: python3 setup-scripts/ubuntu.py
+    - run: python3 setup-scripts/ubuntu.py
     - name: Build Output
       run: python3 setup.py develop
     - name: Upload binaries to release
