@@ -17,3 +17,5 @@ test.py
 docker-build
 docker-output
 test_build
+*.dist
+*.whl

@@ -65,10 +65,11 @@ void init_relation_info(py::module &m) {
                                                "RelationInfo")
             .
 
-                    def(py::init<e_role, bool,
+                    def(py::init<std::string, e_role, bool,
                                 const std::vector<std::string>,
                                 std::vector<SECYAN::Relation::DataType>,
                                 size_t, bool>(),
+                        py::arg("displayName") = "relation",
                         py::arg("owner"), py::arg("is_public"), py::arg("attr_names"),
                         py::arg("attr_types"), py::arg("num_rows"), py::arg("sorted"))
             .def_readwrite("owner", &SECYAN::Relation::RelationInfo::owner, "Owner of this relationship")
@@ -76,7 +77,12 @@ void init_relation_info(py::module &m) {
             .def_readwrite("attr_names", &SECYAN::Relation::RelationInfo::attrNames)
             .def_readwrite("attr_types", &SECYAN::Relation::RelationInfo::attrTypes)
             .def_readwrite("num_rows", &SECYAN::Relation::RelationInfo::numRows)
-            .def_readwrite("sorted", &SECYAN::Relation::RelationInfo::sorted);
+            .def_readwrite("sorted", &SECYAN::Relation::RelationInfo::sorted)
+            .def("__repr__",
+                 [](const SECYAN::Relation::RelationInfo &a) {
+                     return "<secyan_python.RelationInfo  displayName='" + a.displayName + "'>";
+                 }
+            );
 }
 
 void init_annot_info(py::module &m) {
@@ -92,7 +98,7 @@ void init_annot_info(py::module &m) {
 void init_date_time(py::module &m) {
     py::class_<SECYAN::DateTime>(m, "DateTime")
             .def(py::init<int, int, int>(), py::arg("month"), py::arg("year"), py::arg("day"))
-            .def_readwrite("month", &SECYAN::DateTime::day)
+            .def_readwrite("month", &SECYAN::DateTime::month)
             .def_readwrite("year", &SECYAN::DateTime::year)
             .def_readwrite("day", &SECYAN::DateTime::day);
 }

@@ -13,12 +13,12 @@ namespace SECYAN {
 
 
     struct DateTime {
-        int moneth;
+        int month;
         int year;
         int day;
 
         DateTime(int moneth, int year, int day) {
-            this->moneth = moneth;
+            this->month = moneth;
             this->year = year;
             this->day = day;
         }
@@ -106,6 +106,7 @@ namespace SECYAN {
         };
 
         struct RelationInfo {
+            std::string displayName = "relation";
             e_role owner;
             bool isPublic; // Indicating whether the other role (not the owner) also knows the tuples of the relation
             std::vector<std::string> attrNames;

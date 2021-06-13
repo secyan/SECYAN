@@ -8,14 +8,6 @@ import shutil
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
 
-# Convert distutils Windows platform specifiers to CMake -A arguments
-PLAT_TO_CMAKE = {
-    "win32": "Win32",
-    "win-amd64": "x64",
-    "win-arm32": "ARM",
-    "win-arm64": "ARM64",
-}
-
 
 # A CMakeExtension needs a sourcedir instead of a file list.
 # The name must be the _single_ output extension from the CMake build.
@@ -73,12 +65,6 @@ class CMakeBuild(build_ext):
             # CMake allows an arch-in-generator style for backward compatibility
             contains_arch = any(x in cmake_generator for x in {"ARM", "Win64"})
 
-            # Specify the arch if using MSVC generator, but only if it doesn't
-            # contain a backward-compatibility arch spec already in the
-            # generator name.
-            if not single_config and not contains_arch:
-                cmake_args += ["-A", PLAT_TO_CMAKE[self.plat_name]]
-
             # Multi-config generators have a different way to specify configs
             if not single_config:
                 build_args += ["--config", cfg]
@@ -113,12 +99,11 @@ class CMakeBuild(build_ext):
                 shutil.copy(file_path, extdir)
 
 
-
 # The information here can also be placed in setup.cfg - better separation of
 # logic and declaration, and simpler if you include description/version in a file.
 setup(
     name="secyan_python",
-    version="0.0.1",
+    version="0.0.2",
     author="Dean Moldovan",
     author_email="sirily1997@gmail.com",
     description="A test project using pybind11 and CMake",
@@ -126,4 +111,10 @@ setup(
     ext_modules=[CMakeExtension("secyan_python")],
     cmdclass={"build_ext": CMakeBuild},
     zip_safe=False,
+    platforms=['any'],
+    classifiers=['Programming Language :: Python :: 3.6',
+                 'Programming Language :: Python :: 3.7',
+                 'Programming Language :: Python :: 3.8',
+                 'Programming Language :: Python :: 3.9', ],
+    python_requires='>=3.6',
 )

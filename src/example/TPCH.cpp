@@ -49,6 +49,7 @@ std::string datapath[] = {
 
 inline Relation::RelationInfo GetRI(RelationName rn, QueryName qn, DataSize ds, e_role owner) {
     Relation::RelationInfo ri = {
+            "",
             owner,
             false,
             AttrNames[rn][qn],
@@ -66,6 +67,7 @@ inline std::string GetFilePath(RelationName rn, DataSize ds) {
 void run_Q3(DataSize ds, bool printResult) {
 
     Relation::RelationInfo customer_ri = {
+            "",
             CLIENT,
             false,
             {"c_custkey", "c_name", "c_address", "c_nationkey", "c_phone", "c_acctbal", "c_mktsegment", "c_comment"},
@@ -77,10 +79,11 @@ void run_Q3(DataSize ds, bool printResult) {
     Relation::AnnotInfo customer_ai = {true, true};
     Relation customer(customer_ri, customer_ai);
     auto filePath = GetFilePath(CUSTOMER, ds);
-    customer.LoadData(filePath.c_str(), "demo");
+    customer.LoadData(filePath.c_str(), "q3");
 
 
     Relation::RelationInfo orders_ri = {
+            "",
             SERVER,
             false,
             {"o_orderkey", "o_custkey", "o_orderstatus", "o_totalprice", "o_orderdate", "o_orderpriority", "o_clerk",
@@ -100,10 +103,11 @@ void run_Q3(DataSize ds, bool printResult) {
     Relation::AnnotInfo orders_ai = {true, true};
     Relation orders(orders_ri, orders_ai);
     filePath = GetFilePath(ORDERS, ds);
-    orders.LoadData(filePath.c_str(), "demo");
+    orders.LoadData(filePath.c_str(), "q3");
 
 
     Relation::RelationInfo lineitem_ri = {
+            "",
             CLIENT,
             false,
             {"l_orderkey", "l_partkey", "l_suppkey", "l_linenumber", "l_quantity", "l_extendedprice", "l_discount",
@@ -118,7 +122,7 @@ void run_Q3(DataSize ds, bool printResult) {
     Relation::AnnotInfo lineitem_ai = {false, true};
     Relation lineitem(lineitem_ri, lineitem_ai);
     filePath = GetFilePath(LINEITEM, ds);
-    lineitem.LoadData(filePath.c_str(), "demo");
+    lineitem.LoadData(filePath.c_str(), "q3");
 
     customer.Aggregate({"c_custkey"});
     orders.SemiJoin(customer, "o_custkey", "c_custkey");
@@ -127,7 +131,7 @@ void run_Q3(DataSize ds, bool printResult) {
     vector<string> o_groupBy = {"o_orderkey", "o_orderdate", "o_shippriority"};
     orders.Aggregate(o_groupBy);
     orders.RevealAnnotToOwner();
-    if (printResult)
+//    if (printResult)
         orders.Print();
 }
 
@@ -381,6 +385,7 @@ void run_Q9(DataSize ds, bool printResult) {
  */
 void run_Q12(DataSize ds, bool printResult) {
     Relation::RelationInfo orders_ri = {
+            "",
             CLIENT,
             false,
             {"o_orderkey", "o_custkey", "o_orderstatus", "o_totalprice", "o_orderdate", "o_orderpriority", "o_clerk",
@@ -397,6 +402,7 @@ void run_Q12(DataSize ds, bool printResult) {
 
 
     Relation::RelationInfo lineitem_ri = {
+            "",
             SERVER,
             false,
             {"l_orderkey", "l_partkey", "l_suppkey", "l_linenumber", "l_quantity", "l_extendedprice", "l_discount",
@@ -434,6 +440,7 @@ void run_Q12(DataSize ds, bool printResult) {
 void run_Q6(DataSize ds, bool printResult) {
 
     Relation::RelationInfo lineitem_ri = {
+            "",
             CLIENT,
             false,
             {"l_orderkey", "l_partkey", "l_suppkey", "l_linenumber", "l_quantity", "l_extendedprice", "l_discount",
@@ -467,6 +474,7 @@ void run_Q6(DataSize ds, bool printResult) {
 void run_Q16(DataSize ds, bool printResult) {
 
     Relation::RelationInfo partsupp_ri = {
+            "",
             CLIENT,
             false,
             {"ps_partkey", "ps_suppkey", "ps_availqty", "ps_supplycost", "ps_comment"},
@@ -481,6 +489,7 @@ void run_Q16(DataSize ds, bool printResult) {
 
 
     Relation::RelationInfo part_ri = {
+            "",
             SERVER,
             false,
             {"p_partkey", "p_name", "p_mfgr", "p_brand", "p_type", "p_size", "p_container", "p_retailprice",
@@ -515,6 +524,7 @@ void run_Q16(DataSize ds, bool printResult) {
 void run_Q1(DataSize ds, bool printResult) {
 
     Relation::RelationInfo lineitem_ri = {
+            "",
             CLIENT,
             false,
             {"l_orderkey", "l_partkey", "l_suppkey", "l_linenumber", "l_quantity", "l_extendedprice", "l_discount",
@@ -550,6 +560,7 @@ void run_Q1(DataSize ds, bool printResult) {
 void run_Q4(DataSize ds, bool printResult) {
 
     Relation::RelationInfo orders_ri = {
+            "",
             SERVER,
             false,
             {"o_orderkey", "o_custkey", "o_orderstatus", "o_totalprice", "o_orderdate", "o_orderpriority", "o_clerk",
@@ -571,6 +582,7 @@ void run_Q4(DataSize ds, bool printResult) {
 
 
     Relation::RelationInfo lineitem_ri = {
+            "",
             CLIENT,
             false,
             {"l_orderkey", "l_partkey", "l_suppkey", "l_linenumber", "l_quantity", "l_extendedprice", "l_discount",

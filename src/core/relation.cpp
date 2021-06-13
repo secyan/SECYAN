@@ -237,6 +237,11 @@ namespace SECYAN {
             results.emplace_back(row);
         }
 
+        if(printed == 0){
+            vector<DynamicListType> row = {"Empty Relation"};
+            results.emplace_back(row);
+        }
+
         return results;
     }
 
