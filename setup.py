@@ -8,6 +8,9 @@ import shutil
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
 
+with open("README.md", "r", encoding="utf-8") as fh:
+    long_description = fh.read()
+
 
 # A CMakeExtension needs a sourcedir instead of a file list.
 # The name must be the _single_ output extension from the CMake build.
@@ -103,11 +106,12 @@ class CMakeBuild(build_ext):
 # logic and declaration, and simpler if you include description/version in a file.
 setup(
     name="secyan_python",
-    version="0.0.2",
-    author="Dean Moldovan",
+    version="0.0.4",
+    author="Qiwei Li",
     author_email="sirily1997@gmail.com",
-    description="A test project using pybind11 and CMake",
-    long_description="",
+    description="SECYAN c++ implementation",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     ext_modules=[CMakeExtension("secyan_python")],
     cmdclass={"build_ext": CMakeBuild},
     zip_safe=False,
@@ -117,4 +121,8 @@ setup(
                  'Programming Language :: Python :: 3.8',
                  'Programming Language :: Python :: 3.9', ],
     python_requires='>=3.6',
+    install_requires=[
+        "setuptools",
+        "wheel"
+    ]
 )
