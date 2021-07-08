@@ -9,6 +9,3 @@ COPY setup-scripts/ubuntu.py ubuntu.py
 RUN python3 ubuntu.py
 
 WORKDIR /usr/local/project
-
-
-#CMD ["/usr/sbin/sshd", "-D", "-e", "-f", "/etc/ssh/sshd_config_test_clion"]

@@ -110,7 +110,6 @@ class CMakeBuild(build_ext):
 # logic and declaration, and simpler if you include description/version in a file.
 setup(
     name="secyan_python",
-    version="0.0.4",
     author="Qiwei Li",
     author_email="sirily1997@gmail.com",
     description="SECYAN c++ implementation",
