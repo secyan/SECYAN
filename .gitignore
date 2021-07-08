@@ -22,3 +22,6 @@ test_build
 *.gz
 .pypirc
 __pycache__
+*.eggs
+.idea
+.vscode

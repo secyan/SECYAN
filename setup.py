@@ -125,4 +125,8 @@ setup(
                  'Programming Language :: Python :: 3.9', ],
     python_requires='>=3.6',
     packages=find_packages(),
+    setup_requires=['setuptools-git-versioning'],
+    version_config={
+        "template": "{tag}",
+    },
 )
