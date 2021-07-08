@@ -19,3 +19,4 @@ docker-output
 test_build
 *.dist
 *.whl
+*.gz

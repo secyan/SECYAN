@@ -7,6 +7,7 @@ from os import path
 import shutil
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
+from setuptools import find_packages
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
@@ -23,7 +24,8 @@ class CMakeExtension(Extension):
 
 class CMakeBuild(build_ext):
     def build_extension(self, ext):
-        extdir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
+        extdir = os.path.abspath(os.path.dirname(
+            self.get_ext_fullpath(ext.name)))
 
         # required for auto-detection of auxiliary "native" libs
         if not extdir.endswith(os.path.sep):
@@ -40,7 +42,8 @@ class CMakeBuild(build_ext):
         # from Python.
         cmake_args = [
             "-DPYTHON_EXECUTABLE={}".format(sys.executable),
-            "-DEXAMPLE_VERSION_INFO={}".format(self.distribution.get_version()),
+            "-DEXAMPLE_VERSION_INFO={}".format(
+                self.distribution.get_version()),
             "-DCMAKE_BUILD_TYPE={}".format(cfg),
             "-DCMAKE_POSITION_INDEPENDENT_CODE=on"
 
@@ -63,7 +66,8 @@ class CMakeBuild(build_ext):
         else:
 
             # Single config generators are handled "normally"
-            single_config = any(x in cmake_generator for x in {"NMake", "Ninja"})
+            single_config = any(
+                x in cmake_generator for x in {"NMake", "Ninja"})
 
             # CMake allows an arch-in-generator style for backward compatibility
             contains_arch = any(x in cmake_generator for x in {"ARM", "Win64"})
@@ -121,8 +125,5 @@ setup(
                  'Programming Language :: Python :: 3.8',
                  'Programming Language :: Python :: 3.9', ],
     python_requires='>=3.6',
-    install_requires=[
-        "setuptools",
-        "wheel"
-    ]
+    packages=find_packages(),
 )
