@@ -1,9 +1,8 @@
-FROM ubuntu:20.04
+FROM ubuntu:20.04 AS builder
 ENV TZ=Europe/Minsk
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
-  && apt-get install -y ssh \
-    build-essential \
+  && apt-get install -y build-essential \
     gcc \
     g++ \
     gdb \
@@ -33,13 +32,9 @@ RUN mkdir build
 WORKDIR /usr/local/project/pybind11/build
 RUN cmake ..
 RUN make install -j4
-WORKDIR /usr/local/project
-RUN ( \
-    echo 'LogLevel DEBUG2'; \
-    echo 'PermitRootLogin yes'; \
-    echo 'PasswordAuthentication yes'; \
-    echo 'Subsystem sftp /usr/lib/openssh/sftp-server'; \
-  ) > /etc/ssh/sshd_config_test_clion \
-  && mkdir /run/sshd
 
-#CMD ["/usr/sbin/sshd", "-D", "-e", "-f", "/etc/ssh/sshd_config_test_clion"]
+FROM builder
+WORKDIR /usr/local/project/SECYAN
+COPY . .
+RUN python3 setup.py install
+RUN python3 -c "import secyan_python"

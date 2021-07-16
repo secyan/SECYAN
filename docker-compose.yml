@@ -1,21 +1,10 @@
 version: '3'
 services:
-  dev:
-    container_name: secyan_dev
-    command: "/usr/sbin/sshd -D -e -f /etc/ssh/sshd_config_test_clion"
-    ports:
-      - "2222:22"
-    build:
-      dockerfile: docker/.dockerfile
-      context: ./
-    volumes:
-      - ./:/usr/local/project
-
   build:
     container_name: secyan_build
-    command: "python3 setup.py develop"
+    image: sirily11/secyan_python
     build:
-      dockerfile: docker/build.dockerfile
+      dockerfile: docker/Dockerfile
       context: ./
     volumes:
       - ./:/usr/local/project
