@@ -17,11 +17,13 @@ void init_relationship(py::module &m) {
             .def("project_names", &SECYAN::Relation::ProjectNames, py::arg("attr_names"))
             .def("aggregate", py::overload_cast<SECYAN::Relation::AggregateType>(&SECYAN::Relation::Aggregate), py::arg("agg_type"))
             .def("aggregate", py::overload_cast<SECYAN::Relation::AggregateType, const char *>(&SECYAN::Relation::Aggregate), py::arg("agg_type"), py::arg("attr_name"))
-            .def("aggregate_name", &SECYAN::Relation::AggregateNames, py::arg("agg_type"), py::arg("agg_attr_names"))
+            .def("aggregate", py::overload_cast<SECYAN::Relation::AggregateType, std::vector<std::string> &>(&SECYAN::Relation::Aggregate), py::arg("agg_type"), py::arg("attr_names"))
+            //.def("aggregate_name", &SECYAN::Relation::AggregateNames, py::arg("agg_type"), py::arg("agg_attr_names"))
             // to be deleted
             .def("aggregate", py::overload_cast<>(&SECYAN::Relation::Aggregate))
             .def("aggregate", py::overload_cast<const char *>(&SECYAN::Relation::Aggregate), py::arg("attr_name"))
-            .def("aggregate_name_tbd", &SECYAN::Relation::AggregateNames_tbd, py::arg("agg_attr_names"))
+            .def("aggregate", py::overload_cast<std::vector<std::string> &>(&SECYAN::Relation::Aggregate), py::arg("attr_names"))
+            //.def("aggregate_name_tbd", &SECYAN::Relation::AggregateNames_tbd, py::arg("agg_attr_names"))
             // end of to be deleted
             .def("aggregate_sum", &SECYAN::Relation::AggregateSum)
             .def("aggregate_max", &SECYAN::Relation::AggregateMax)
