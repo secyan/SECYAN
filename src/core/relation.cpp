@@ -515,10 +515,12 @@ namespace SECYAN {
     {
         switch (aggType) {
             case AggregateType::SUM :
-                AggregateSum();
+                if (!m_AI.isBoolean)
+                    AggregateSum();
                 break;
             case AggregateType::MAX :
-                AggregateMax();
+                if (!m_AI.isBoolean)
+                    AggregateMax();
                 break;
             default:
                 std::cerr << "you should specify the type of Aggregate function/ the function type you input has not been implemented" << std::endl;
@@ -550,19 +552,27 @@ namespace SECYAN {
     // if no parameters are passed in, default call AggregateSum()
     void Relation::Aggregate()
     {
-        AggregateSum();
+        if(!m_AI.isBoolean)
+            AggregateSum();
     }
 
     void Relation::Aggregate(const char *aggAttrName)
     {
-        Project(aggAttrName);
-        AggregateSum();
+
+        if (!m_AI.isBoolean)
+        {
+            Project(aggAttrName);
+            AggregateSum();
+        }
     }
 
     void Relation::Aggregate(std::vector<std::string> &aggAttrNames)
     {
-        Project(aggAttrNames);
-        AggregateSum();
+        if (!m_AI.isBoolean)
+        {
+            Project(aggAttrNames);
+            AggregateSum();
+        }
     }
 
     /**
