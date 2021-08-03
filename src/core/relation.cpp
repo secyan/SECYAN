@@ -408,13 +408,184 @@ namespace SECYAN {
             m_Annot = PermutorAggregate(aggBits, m_Annot);
     }
 
-    void Relation::Aggregate() {
+//    void Relation::Aggregate() {
+//        if (m_RI.numRows == 0)
+//            return;
+//        Sort();
+//        assert(!m_AI.isBoolean);
+//        m_RI.sorted = false;
+//        if (IsDummy()) {
+//            if (!m_AI.knownByOwner)
+//                m_Annot = SenderAggregate(m_Annot);
+//            return;
+//        }
+//        OwnerAnnotAddAgg();
+//    }
+//
+//    void Relation::Aggregate(const char *aggAttrName) {
+//        Project(aggAttrName);
+//        Aggregate();
+//    }
+//
+//    void Relation::Aggregate(std::vector<std::string> &aggAttrNames) {
+//        Project(aggAttrNames);
+//        Aggregate();
+//    }
+
+    // owner max (annotaion)
+    void Relation::OwnerAnnotMaxAgg()
+    {
+        auto size = m_RI.numRows;
+        std::vector<uint32_t> aggBits(size - 1);
+        for (uint32_t i = 0; i < size - 1; i++)
+        {
+            aggBits[i] = m_Tuples[i] == m_Tuples[i + 1];
+            if (aggBits[i])
+                m_Tuples[i].ToDummy();
+        }
+        if (m_RI.isPublic || m_AI.knownByOwner)
+        {
+            for (uint32_t i = 0; i < size - 1; i++)
+            {
+                if (aggBits[i])
+                {
+                    bool swap = m_Annot[i + 1] < m_Annot[i];
+                    if (swap)
+                        m_Annot[i + 1] = m_Annot[i];
+                    m_Annot[i] = 0;
+                }
+            }
+        }
+    }
+
+    // oblivious max (annotation)
+    void Relation::OblivAnnotMaxAgg()
+    {
+        int numRows = m_RI.numRows;
+        // initialize circuit
+        auto yc = (BooleanCircuit *)gParty.GetCircuit(S_YAO);
+        share **bAnnot = new share *[numRows];
+        share **cmpBits = new share *[numRows - 1];
+        share *s0, *s1;
+        //std::cout<<"run after circuit initialization" << std::endl;
+        for (uint32_t i = 0; i < numRows; i++)
+        {
+            auto s0 = yc->PutINGate(m_Annot[i], 32, SERVER);
+            auto s1 = yc->PutINGate(m_Annot[i], 32, CLIENT);
+            bAnnot[i] = yc->PutADDGate(s0, s1);
+        }
+        //std::cout<<"run after circuit assignment" << std::endl;
+        for (uint32_t i = 0; i < numRows - 1; i++)
+        {
+            bool sameTuple = (m_RI.owner == gParty.GetRole()) && (m_Tuples[i] == m_Tuples[i + 1]);
+            auto s_rep = yc->PutINGate((uint8_t)sameTuple, 1, m_RI.owner);
+            // exchange signal
+            auto gt = yc->PutGTGate(bAnnot[i], bAnnot[i + 1]);
+            //yc->PutPrintValueGate(gt, "gt = ");
+            cmpBits[i] = yc->PutANDGate(s_rep, gt);
+            //yc->PutPrintValueGate(cmpBits[i], "cmpBits = ");
+            bAnnot[i + 1] = yc->PutMUXGate(bAnnot[i], bAnnot[i + 1], cmpBits[i]);
+            //yc->PutPrintValueGate(bAnnot[i], "bAnnot = ");
+        }
+        //std::cout << "run after circuit main logic" << std::endl;
+        for (uint32_t i = 0; i < numRows - 1; i++)
+            cmpBits[i] = yc->PutOUTGate(cmpBits[i], ALL);
+
+        gParty.ExecCircuit();
+        //std::cout << "run after circuit execution" << std::endl;
+        for (uint32_t i = 0; i < numRows - 1; i++)
+        {
+            auto swap = cmpBits[i]->get_clear_value<uint8_t>();
+            if (swap)
+                m_Annot[i + 1] = m_Annot[i];
+        }
+        gParty.Reset();
+        delete[] bAnnot;
+        delete[] cmpBits;
+        m_RI.sorted = false;
+        if (IsDummy())
+            return;
+        for (uint32_t i = 0; i < numRows - 1; i++)
+            if (m_Tuples[i] == m_Tuples[i + 1])
+                m_Tuples[i].ToDummy();
+    }
+
+    // entry for aggregate func
+    void Relation::Aggregate(AggregateType aggType)
+    {
+        switch (aggType) {
+            case AggregateType::SUM :
+                AggregateSum();
+                break;
+            case AggregateType::MAX :
+                AggregateMax();
+                break;
+            default:
+                std::cerr << "you should specify the type of Aggregate function/ the function type you input has not been implemented" << std::endl;
+        }
+    }
+
+    void Relation::Aggregate(AggregateType aggType, const char *aggAttrName)
+    {
+        Project(aggAttrName);
+        Aggregate(aggType);
+    }
+
+    void Relation::Aggregate(AggregateType aggType, std::vector<std::string> &aggAttrNames)
+    {
+        Project(aggAttrNames);
+        Aggregate(aggType);
+    }
+
+    /**
+     * Used for python wrapper
+     * @param aggType
+     * @param aggAttrNames
+     */
+    void Relation::AggregateNames(AggregateType aggType, std::vector<std::string> &aggAttrNames)
+    {
+        Aggregate(aggType, aggAttrNames);
+    }
+
+    // if no parameters are passed in, default call AggregateSum()
+    void Relation::Aggregate()
+    {
+        AggregateSum();
+    }
+
+    void Relation::Aggregate(const char *aggAttrName)
+    {
+        Project(aggAttrName);
+        AggregateSum();
+    }
+
+    void Relation::Aggregate(std::vector<std::string> &aggAttrNames)
+    {
+        Project(aggAttrNames);
+        AggregateSum();
+    }
+
+    /**
+     * Used for python wrapper
+     * if the above three funcs are deleted in the future
+     * this should also be deleted
+     * @param aggAttrNames
+     */
+     void Relation::AggregateNames_tbd(std::vector <std::string> &aggAttrNames)
+     {
+         Aggregate(aggAttrNames);
+     }
+
+    // sum(annotation)
+    void Relation::AggregateSum()
+    {
         if (m_RI.numRows == 0)
             return;
         Sort();
         assert(!m_AI.isBoolean);
         m_RI.sorted = false;
-        if (IsDummy()) {
+        if (IsDummy())
+        {
             if (!m_AI.knownByOwner)
                 m_Annot = SenderAggregate(m_Annot);
             return;
@@ -422,23 +593,25 @@ namespace SECYAN {
         OwnerAnnotAddAgg();
     }
 
-    void Relation::Aggregate(const char *aggAttrName) {
-        Project(aggAttrName);
-        Aggregate();
+    // max(annotation)
+    void Relation::AggregateMax()
+    {
+        if (m_RI.numRows == 0)
+            return;
+        Sort();
+        assert(!m_AI.isBoolean);
+        m_RI.sorted = false;
+        if(!m_AI.knownByOwner)
+        {
+            OblivAnnotMaxAgg();
+            return;
+        }
+        if (IsDummy())
+            return;
+        OwnerAnnotMaxAgg();
     }
 
-    void Relation::Aggregate(std::vector<std::string> &aggAttrNames) {
-        Project(aggAttrNames);
-        Aggregate();
-    }
 
-    /**
-     * Used for python wrapper
-     * @param aggAttrNames
-     */
-    void Relation::AggregateNames(std::vector<std::string> &aggAttrNames) {
-        Aggregate(aggAttrNames);
-    }
 
     uint64_t Relation::HashTuple(int i) {
         if (i >= m_RI.numRows || i < 0 || m_Tuples[i].IsDummy())

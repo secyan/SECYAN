@@ -153,10 +153,10 @@ void run_Q10(DataSize ds, bool printResult) {
     Relation lineitem(lineitem_ri, lineitem_ai);
     filePath = GetFilePath(LINEITEM, ds);
     lineitem.LoadData(filePath.c_str(), "q10_annot");
-    lineitem.Aggregate();
+    lineitem.Aggregate(SECYAN::Relation::MAX);
 
     orders.SemiJoin(lineitem, "o_orderkey", "l_orderkey");
-    orders.Aggregate("o_custkey");
+    orders.Aggregate(SECYAN::Relation::MAX,"o_custkey");
     customer.SemiJoin(orders, "c_custkey", "o_custkey");
     customer.RevealAnnotToOwner();
     if (printResult)

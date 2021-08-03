@@ -11,7 +11,6 @@
 
 namespace SECYAN {
 
-
     struct DateTime {
         int month;
         int year;
@@ -98,6 +97,12 @@ namespace SECYAN {
 
     class Relation {
     public:
+        // aggregate function type
+        enum AggregateType {
+            SUM,
+            MAX
+        };
+
         enum DataType {
             INT,
             DECIMAL,
@@ -156,13 +161,28 @@ namespace SECYAN {
 
         void ProjectNames(std::vector<std::string> &projectAttrNames);
 
+//        void Aggregate();
+//
+//        void Aggregate(const char *aggAttrName);
+//
+//        void Aggregate(std::vector<std::string> &aggAttrNames);
+
+        // Aggregate func
+        void Aggregate(AggregateType aggType);
+        void Aggregate(AggregateType aggType, const char *aggAttrName);
+        void Aggregate(AggregateType aggType, std::vector<std::string> &aggAttrNames);
+        // if no Type parameters are passed into Aggregate() , default call AggregateSum();
+        // the following three funcs can be eliminated if we want Aggregate(param) must have a param which has type of AggregateType
+        // if eliminated, Aggregate funcs in TPCH.cpp should be updated under the restriction above.
         void Aggregate();
-
         void Aggregate(const char *aggAttrName);
-
         void Aggregate(std::vector<std::string> &aggAttrNames);
-
-        void AggregateNames(std::vector<std::string> &aggAttrNames);
+        // specified aggregate_function
+        void AggregateSum();
+        void AggregateMax();
+        // for python wrapper
+        void AggregateNames(AggregateType aggType, std::vector<std::string> &aggAttrNames);
+        void AggregateNames_tbd(std::vector<std::string> &aggAttrNames);
 
         void AnnotAdd(Relation &child);
 
@@ -226,6 +246,10 @@ namespace SECYAN {
         void OblivAnnotOrAgg();
 
         void OwnerAnnotAddAgg();
+
+        void OblivAnnotMaxAgg();
+
+        void OwnerAnnotMaxAgg();
 
         std::vector<uint64_t> PackTuples();
     };
