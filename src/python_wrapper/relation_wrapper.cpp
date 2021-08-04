@@ -15,9 +15,18 @@ void init_relationship(py::module &m) {
             .def("sort", &SECYAN::Relation::Sort)
             .def("project", py::overload_cast<const char *>(&SECYAN::Relation::Project), py::arg("attr_name"))
             .def("project_names", &SECYAN::Relation::ProjectNames, py::arg("attr_names"))
+            .def("aggregate", py::overload_cast<SECYAN::Relation::AggregateType>(&SECYAN::Relation::Aggregate), py::arg("agg_type"))
+            .def("aggregate", py::overload_cast<SECYAN::Relation::AggregateType, const char *>(&SECYAN::Relation::Aggregate), py::arg("agg_type"), py::arg("attr_name"))
+            .def("aggregate", py::overload_cast<SECYAN::Relation::AggregateType, std::vector<std::string> &>(&SECYAN::Relation::Aggregate), py::arg("agg_type"), py::arg("attr_names"))
+            //.def("aggregate_name", &SECYAN::Relation::AggregateNames, py::arg("agg_type"), py::arg("agg_attr_names"))
+            // to be deleted
             .def("aggregate", py::overload_cast<>(&SECYAN::Relation::Aggregate))
             .def("aggregate", py::overload_cast<const char *>(&SECYAN::Relation::Aggregate), py::arg("attr_name"))
-            .def("aggregate_names", &SECYAN::Relation::AggregateNames, py::arg("agg_attr_names"))
+            .def("aggregate", py::overload_cast<std::vector<std::string> &>(&SECYAN::Relation::Aggregate), py::arg("attr_names"))
+            //.def("aggregate_name_tbd", &SECYAN::Relation::AggregateNames_tbd, py::arg("agg_attr_names"))
+            // end of to be deleted
+            .def("aggregate_sum", &SECYAN::Relation::AggregateSum)
+            .def("aggregate_max", &SECYAN::Relation::AggregateMax)
             .def("annot_add", &SECYAN::Relation::AnnotAdd, py::arg("child"))
             .def("annot_sub", &SECYAN::Relation::AnnotSub, py::arg("child"))
 //            .def("annot_div", &SECYAN::Relation::AnnotDiv);
@@ -42,6 +51,12 @@ void init_relationship(py::module &m) {
                  py::arg("show_zero_annoted_tuple") = false);
 
 };
+
+void init_AggregateTpe(py::module &m){
+    py::enum_<SECYAN::Relation::AggregateType>(m, "AggregateType")
+            .value("SUM", SECYAN::Relation::AggregateType::SUM)
+            .value("MAX", SECYAN::Relation::AggregateType::MAX);
+}
 
 void init_DataType(py::module &m) {
     py::enum_<SECYAN::Relation::DataType>(m,
@@ -102,4 +117,6 @@ void init_date_time(py::module &m) {
             .def_readwrite("year", &SECYAN::DateTime::year)
             .def_readwrite("day", &SECYAN::DateTime::day);
 }
+
+
 

@@ -79,7 +79,7 @@ void run_Q3(DataSize ds, bool printResult) {
     Relation::AnnotInfo customer_ai = {true, true};
     Relation customer(customer_ri, customer_ai);
     auto filePath = GetFilePath(CUSTOMER, ds);
-    customer.LoadData(filePath.c_str(), "q3");
+    customer.LoadData(filePath.c_str(), "q3_annot");
 
 
     Relation::RelationInfo orders_ri = {
@@ -103,7 +103,7 @@ void run_Q3(DataSize ds, bool printResult) {
     Relation::AnnotInfo orders_ai = {true, true};
     Relation orders(orders_ri, orders_ai);
     filePath = GetFilePath(ORDERS, ds);
-    orders.LoadData(filePath.c_str(), "q3");
+    orders.LoadData(filePath.c_str(), "q3_annot");
 
 
     Relation::RelationInfo lineitem_ri = {
@@ -122,8 +122,7 @@ void run_Q3(DataSize ds, bool printResult) {
     Relation::AnnotInfo lineitem_ai = {false, true};
     Relation lineitem(lineitem_ri, lineitem_ai);
     filePath = GetFilePath(LINEITEM, ds);
-    lineitem.LoadData(filePath.c_str(), "q3");
-
+    lineitem.LoadData(filePath.c_str(), "q3_annot");
     customer.Aggregate({"c_custkey"});
     orders.SemiJoin(customer, "o_custkey", "c_custkey");
     lineitem.Aggregate({"l_orderkey"});
@@ -131,7 +130,7 @@ void run_Q3(DataSize ds, bool printResult) {
     vector<string> o_groupBy = {"o_orderkey", "o_orderdate", "o_shippriority"};
     orders.Aggregate(o_groupBy);
     orders.RevealAnnotToOwner();
-//    if (printResult)
+    if (printResult)
         orders.Print();
 }
 
@@ -153,10 +152,10 @@ void run_Q10(DataSize ds, bool printResult) {
     Relation lineitem(lineitem_ri, lineitem_ai);
     filePath = GetFilePath(LINEITEM, ds);
     lineitem.LoadData(filePath.c_str(), "q10_annot");
-    lineitem.Aggregate();
+    lineitem.Aggregate(SECYAN::Relation::MAX);
 
     orders.SemiJoin(lineitem, "o_orderkey", "l_orderkey");
-    orders.Aggregate("o_custkey");
+    orders.Aggregate(SECYAN::Relation::MAX,"o_custkey");
     customer.SemiJoin(orders, "c_custkey", "o_custkey");
     customer.RevealAnnotToOwner();
     if (printResult)
