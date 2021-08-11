@@ -21,6 +21,7 @@ PYBIND11_MODULE(secyan_python, m) {
     py::module constant = m.def_submodule("constant", "A module contains list of constant values");
     init_e_role(constant);
     init_DataType(constant);
+    init_AggregateType(constant);
 
 }
 
