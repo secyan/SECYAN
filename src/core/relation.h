@@ -7,6 +7,8 @@
 #include "aby/abyparty.h"
 #include "circuit/booleancircuits.h"
 #include <cassert>
+//annotation-gen
+#include "sqlGen.h"
 
 
 namespace SECYAN {
@@ -225,6 +227,9 @@ namespace SECYAN {
 
         // For debug test only
         void PrintTableWithoutRevealing(const char *msg = NULL, int limit_size = 100);
+
+        // return annot_gen sql
+        std::string annotSqlGen(std::string query, std::string annot_name, std::string relation_name);
 
     private:
         RelationInfo m_RI;

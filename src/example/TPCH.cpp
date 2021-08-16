@@ -79,6 +79,7 @@ void run_Q3(DataSize ds, bool printResult) {
     Relation::AnnotInfo customer_ai = {true, true};
     Relation customer(customer_ri, customer_ai);
     auto filePath = GetFilePath(CUSTOMER, ds);
+    //customer.annotSqlGen(std::string query);
     customer.LoadData(filePath.c_str(), "q3_annot");
 
 

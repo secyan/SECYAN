@@ -53,7 +53,8 @@ void init_relationship(py::module &m) {
             .def("print_table_without_revealing", &SECYAN::Relation::PrintTableWithoutRevealing, py::arg("msg"),
                  py::arg("limit_size"))
             .def("return_print_results", &SECYAN::Relation::ReturnPrintResults, py::arg("limit_size") = 100,
-                 py::arg("show_zero_annoted_tuple") = false);
+                 py::arg("show_zero_annoted_tuple") = false)
+            .def("annot_sql_gen", &SECYAN::Relation::annotSqlGen, py::arg("query"), py::arg("annot_name"), py::arg("relation_name"));
 
 };
 
