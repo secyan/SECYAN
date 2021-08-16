@@ -8,7 +8,7 @@
 using namespace SECYAN;
 
 void test_sqlGen(){
-    std::string query = "select table1.o_orderkey, table2.o_orderdate, table3.o_shippriority,"\
+    std::string query = "select o_orderkey, o_orderdate, o_shippriority,"\
                         "sum(l_extendedprice * (1 - l_discount)) as revenue\n"\
                         "from customer, orders, lineitem\n"\
                         "where c_mktsegment = 'AUTOMOBILE'\n"\
