@@ -1060,5 +1060,10 @@ namespace SECYAN {
                 m_Tuples[i].push_back(value);
     }
 
+    // used for annotation gen
+    std::string Relation::annotSqlGen(std::string query, std::string annot_name, std::string relation_name) {
+        return output_sql(query, annot_name, relation_name, m_RI.attrNames);
+    }
+
 } // namespace SECYAN
 

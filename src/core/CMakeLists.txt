@@ -16,6 +16,7 @@ target_link_libraries(secyan INTERFACE
         ABY::aby
         libOTe
         relic_s
+        PUBLIC annotGenSql
         )
 
 
@@ -24,4 +25,5 @@ target_include_directories(secyan PUBLIC
         ../../extern/ABY/extern/ENCRYPTO_utils/src
         ../../extern/libOTe/cryptoTools
         ../../extern/libOTe/
+        ../annotGenSql
         )
