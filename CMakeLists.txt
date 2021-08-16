@@ -88,7 +88,8 @@ add_dependencies(libOTe relic_s)
 add_subdirectory(src/core)
 add_subdirectory(src/python_wrapper)
 add_subdirectory(src/example)
-
+add_subdirectory(src/annotGenSql)
+add_subdirectory(src/testSqlGen)
 
 if (SECYAN_TEST)
     add_subdirectory(src/test)
