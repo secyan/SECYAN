@@ -1,6 +1,6 @@
 version: '3'
 services:
-  example:
+  server:
     container_name: secyan_example_server
     image: sirily11/secyan_python
     build:
@@ -9,5 +9,22 @@ services:
     volumes:
       - ./:/usr/local/project
     environment:
-      - address=example
+      - address=127.0.0.1
+      - role=server
+    ports:
+    - 7766:7766
+
+    command: python3 /usr/local/project/src/python_example/tpch.py
+
+  client:
+    container_name: secyan_example_server
+    image: sirily11/secyan_python
+    build:
+      dockerfile: docker/Dockerfile
+      context: .
+    volumes:
+      - ./:/usr/local/project
+    environment:
+      - address=server
+      - role=client
     command: python3 /usr/local/project/src/python_example/tpch.py

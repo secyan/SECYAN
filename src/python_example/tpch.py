@@ -6,6 +6,7 @@ import os
 from multiprocessing import Queue, Process
 import datetime
 from threading import Thread
+import os
 
 filenames = ["customer.tbl",
              "orders.tbl",
@@ -120,15 +121,16 @@ def q3(size_index: int):
     lineitem.aggregate("l_orderkey")
     orders.semi_join_attr(lineitem, "o_orderkey", "l_orderkey")
 
-    orders.aggregate_names(["o_orderkey", "o_orderdate", "o_shippriority"])
+    orders.aggregate(["o_orderkey", "o_orderdate", "o_shippriority"])
     orders.reveal_annot_to_owner()
 
     results = orders.return_print_results(limit_size=10, show_zero_annoted_tuple=True)
     return results
 
 
-def run_example(query_func, role: E_role, size_index, queue: Queue):
-    init_global_party(address="127.0.0.1", port=7766, role=role)
+def run_example(query_func, role: E_role, size_index, address: str):
+    init_global_party(address=address, port=7766, role=role)
+    print("Started server")
     result = query_func(size_index)
     ret = []
 
@@ -141,24 +143,38 @@ def run_example(query_func, role: E_role, size_index, queue: Queue):
                 r.append(col)
         ret.append(r)
 
-    queue.put(ret)
+    return ret
 
 
 if __name__ == '__main__':
-    client_queue = Queue()
-    server_queue = Queue()
+    #
+    #
+    # client_queue = Queue()
+    # server_queue = Queue()
+    #
+    # print("Start Client")
+    # client = Process(target=run_example, args=(q3, E_role.CLIENT, 0, client_queue))
+    #
+    # print("Start as server")
+    # server = Process(target=run_example, args=(q3, E_role.SERVER, 0, server_queue))
+    #
+    # client.start()
+    # server.start()
+    #
+    # client.join()
+    # server.join()
+    #
+    # print(client_queue.get())
+    # print(server_queue.get())
 
-    print("Start Client")
-    client = Process(target=run_example, args=(q3, E_role.CLIENT, 0, client_queue))
+    role = os.environ.get("role")
+    address = os.environ.get("address")
 
-    print("Start as server")
-    server = Process(target=run_example, args=(q3, E_role.SERVER, 0, server_queue))
-
-    client.start()
-    server.start()
-
-    client.join()
-    server.join()
-
-    print(client_queue.get())
-    print(server_queue.get())
+    if role == "server":
+        print("starting server, using address " + address)
+        r = run_example(q3, E_role.SERVER, 0, address)
+        print(r)
+    else:
+        print("starting client using address " + address)
+        r = run_example(q3, E_role.CLIENT, 0, address)
+        print(r)

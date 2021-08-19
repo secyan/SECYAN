@@ -1,4 +1,4 @@
-FROM ubuntu/postgres:12-20.04_beta AS builder
+FROM debian AS builder
 ENV TZ=Europe/Minsk
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
@@ -26,12 +26,13 @@ RUN apt install -y ninja-build
 RUN apt install --no-install-recommends -y python3 python3-pip python3-dev
 RUN apt install -y git
 WORKDIR /usr/local/project
-RUN git clone https://github.com/pybind/pybind11.git
-WORKDIR /usr/local/project/pybind11
-RUN mkdir build
-WORKDIR /usr/local/project/pybind11/build
-RUN cmake ..
-RUN make install -j4
+#RUN git clone https://github.com/pybind/pybind11.git
+#WORKDIR /usr/local/project/pybind11
+#RUN mkdir build
+#WORKDIR /usr/local/project/pybind11/build
+#RUN cmake ..
+#RUN make install -j4
+RUN apt install -y python3-pybind11
 
 FROM builder
 WORKDIR /usr/local/project/SECYAN
