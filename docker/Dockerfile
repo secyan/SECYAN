@@ -1,4 +1,4 @@
-FROM debian AS builder
+FROM ubuntu/postgres:12-20.04_beta AS builder
 ENV TZ=Europe/Minsk
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
