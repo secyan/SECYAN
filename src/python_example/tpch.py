@@ -5,6 +5,7 @@ from os import path
 import os
 from multiprocessing import Queue, Process
 import datetime
+from threading import Thread
 
 filenames = ["customer.tbl",
              "orders.tbl",
@@ -125,11 +126,9 @@ def q3(size_index: int):
     results = orders.return_print_results(limit_size=10, show_zero_annoted_tuple=True)
     return results
 
-    # orders.print(limit_size=15, show_zero_annoted_tuple=True)
-
 
 def run_example(query_func, role: E_role, size_index, queue: Queue):
-    init_global_party(address="0.0.0.0", port=7766, role=role)
+    init_global_party(address="127.0.0.1", port=7766, role=role)
     result = query_func(size_index)
     ret = []
 

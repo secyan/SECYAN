@@ -1,13 +1,13 @@
 version: '3'
 services:
-  build:
-    container_name: secyan_build
+  example:
+    container_name: secyan_example_server
     image: sirily11/secyan_python
     build:
       dockerfile: docker/Dockerfile
-      context: ./
+      context: .
     volumes:
       - ./:/usr/local/project
     environment:
-      - build_dir=/usr/local/project/docker-build
-      - output_dir=/usr/local/project/docker-output
+      - address=example
+    command: python3 /usr/local/project/src/python_example/tpch.py

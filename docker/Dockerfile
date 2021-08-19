@@ -38,3 +38,4 @@ WORKDIR /usr/local/project/SECYAN
 COPY . .
 RUN python3 setup.py install
 RUN python3 -c "import secyan_python"
+EXPOSE 7766
